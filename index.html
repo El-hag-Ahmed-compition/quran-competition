@@ -3,72 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسابقة مسجد الحاج أحمد الملهود</title>
+    <title>مسابقة مسجد الملهود</title>
     <style>
         body {
-            background-color: #0d3b26; /* الأخضر الغامق اللي في الصورة */
+            background-color: #0d3b26; /* الأخضر الغامق الملكي */
             background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            color: #fdb931; /* اللون الذهبي */
-            font-family: 'Amiri', serif;
+            color: #fdb931; /* لون ذهبي */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
-            padding-bottom: 50px;
+            min-height: 100vh;
         }
-        .header { text-align: center; padding: 20px; }
-        .header h1 { font-size: 1.5rem; margin-bottom: 10px; }
-        .bismillah { font-size: 2.5rem; margin: 15px 0; }
-        .verse { color: #fff; font-size: 1.3rem; max-width: 90%; line-height: 1.8; margin: 10px auto; }
+        .header { text-align: center; padding: 30px 10px; }
+        .bismillah { font-size: 2.2rem; margin: 10px 0; font-weight: bold; }
+        .verse { color: #fff; font-size: 1.1rem; max-width: 90%; line-height: 1.6; margin: 15px auto; }
         
-        .grid-container {
+        .buttons-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            width: 85%;
+            gap: 15px;
+            width: 90%;
             max-width: 400px;
-            margin-top: 30px;
         }
         .btn {
-            background: linear-gradient(to bottom, #ffe259, #ffa751); /* تدرج ذهبي زي الصورة */
+            background: linear-gradient(135deg, #ffd700, #b8860b); /* تدرج ذهبي زي الصورة */
             color: #0d3b26;
             padding: 15px;
-            border-radius: 25px;
+            border-radius: 12px;
             text-align: center;
             text-decoration: none;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .btn-center { grid-column: span 2; margin: 0 auto; width: 60%; }
-        .footer-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 40px;
-            background-color: #072a1b;
-            border-top: 3px solid #14452f;
-        }
+        .btn-full { grid-column: span 2; background: #fdb931; } /* زرار التسجيل عريض */
     </style>
 </head>
 <body>
-
     <div class="header">
-        <h1>مسابقة مسجد الحاج أحمد الملهود</h1>
+        <h1 style="font-size: 1.5rem;">مسابقة مسجد الحاج أحمد الملهود</h1>
         <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-        <div class="verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَٰلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِّمَّا يَجْمَعُونَ" (58)</div>
-        <p style="color: #fff;">نحو جيل متقن لكتاب الله</p>
+        <div class="verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَٰلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِّمَّا يَجْمَعُونَ"</div>
+        <p style="color: #fff; font-size: 0.9rem;">نحو جيل متقن لكتاب الله</p>
     </div>
 
-    <div class="grid-container">
+    <div class="buttons-container">
         <a href="levels.html" class="btn">المستويات</a>
         <a href="rules.html" class="btn">الشروط</a>
-        <a href="register.html" class="btn btn-center">سجل الآن</a>
+        <a href="register.html" class="btn btn-full">سجل الآن</a>
         <a href="status.html" class="btn">حالة الطالب</a>
         <a href="schedule.html" class="btn">المواعيد</a>
     </div>
-
-    <div class="footer-bar"></div>
-
 </body>
 </html>
