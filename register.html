@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل المتسابقين</title>
+    <style>
+        body {
+            background-color: #0d3b26;
+            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            color: #fff;
+            font-family: sans-serif;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%; max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #fdb931;
+        }
+        input, select, button {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border-radius: 8px; border: none; font-size: 1rem;
+        }
+        button {
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+            color: #0d3b26; font-weight: bold; cursor: pointer;
+        }
+        .msg { color: #ffd700; text-align: center; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>نموذج تسجيل المتسابق</h2>
+    
+    <div class="form-container">
+        <label>اسم الطالب رباعي:</label>
+        <input type="text" id="name" placeholder="ادخل الاسم كاملاً">
+
+        <label>تاريخ الميلاد:</label>
+        <input type="date" id="dob" onchange="calculateLevels()">
+
+        <label>المستوى المتاح لك:</label>
+        <select id="levelSelect">
+            <option value="">ادخل تاريخ الميلاد أولاً</option>
+        </select>
+
+        <label>رقم ولي الأمر (واتساب):</label>
+        <input type="tel" id="phone" placeholder="01xxxxxxxxx">
+
+        <button onclick="submitData()">إرسال البيانات</button>
+        <div id="responseMsg" class="msg"></div>
+    </div>
+
+    <script>
+        function calculateLevels() {
+            const dob = new Date(document.getElementById('dob').value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const levelSelect = document.getElementById('levelSelect');
+            levelSelect.innerHTML = '';
+
+            if (isNaN(age)) return;
+
+            let options = "";
+            if (age <= 10) options += '<option value="5">المستوى الخامس (5 أجزاء)</option>';
+            if (age <= 11) options += '<option value="4">المستوى الرابع (ربع القرآن)</option>';
+            if (age <= 13) options += '<option value="3">المستوى الثالث (ثلث القرآن)</option>';
+            if (age <= 15) options += '<option value="2">المستوى الثاني (نصف القرآن)</option>';
+            if (age <= 20) options += '<option value="1">المستوى الأول (قرآن كامل)</option>';
+
+            if (options === "") {
+                levelSelect.innerHTML = '<option value="">عذراً، السن تجاوز الحد الأقصى (20 سنة)</option>';
+            } else {
+                levelSelect.innerHTML = '<option value="">اختر المستوى...</option>' + options;
+            }
+        }
+
+        function submitData() {
+            const name = document.getElementById('name').value;
+            const level = document.getElementById('levelSelect').value;
+            if(!name || !level) {
+                alert("برجاء إكمال البيانات");
+                return;
+            }
+            document.getElementById('responseMsg').innerText = "تم استلام بياناتك بنجاح! (سيتم الربط بقاعدة البيانات قريباً)";
+        }
+    </script>
+</body>
+</html>
