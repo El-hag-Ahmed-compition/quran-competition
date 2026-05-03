@@ -85,7 +85,20 @@
                 alert("برجاء إكمال البيانات");
                 return;
             }
-            document.getElementById('responseMsg').innerText = "تم استلام بياناتك بنجاح! (سيتم الربط بقاعدة البيانات قريباً)";
+         const url = "https://script.google.com/macros/s/AKfycbw-8gSTc3KQbqvURSU9ZA2OhHe_uofQuqxQv_KpHymVcg4PwBjA7SWh4_j56HlKLOg/exec"; 
+
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({name, dob, level, phone})
+    })
+    .then(res => res.text())
+    .then(code => {
+        document.getElementById('responseMsg').innerHTML = `
+            <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px; margin-top: 10px;">
+                <p>تم التسجيل بنجاح! كود الطالب هو:</p>
+                <h2 style="margin: 5px 0;">${code}</h2>
+            </div>`;
+    });
         }
     </script>
 </body>
