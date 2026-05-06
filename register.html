@@ -61,11 +61,9 @@
             if (age <= 15) options += '<option value="2">المستوى الثاني (نصف القرآن)</option>';
             if (age <= 20) options += '<option value="1">المستوى الأول (قرآن كامل)</option>';
 
-            if (options === '<option value="">اختر المستوى...</option>') {
-                levelSelect.innerHTML = '<option value="">عذراً، السن تجاوز الحد الأقصى</option>';
-            } else {
-                levelSelect.innerHTML = options;
-            }
+            levelSelect.innerHTML = (options === '<option value="">اختر المستوى...</option>') 
+                ? '<option value="">عذراً، السن تجاوز الحد الأقصى</option>' 
+                : options;
         }
 
         function submitData() {
@@ -81,33 +79,31 @@
             }
 
             msgDiv.style.color = "#ffd700";
-            msgDiv.innerText = "جاري إرسال البيانات... انتظر قليلاً";
+            msgDiv.innerText = "جاري إرسال البيانات وتوليد كودك الخاص...";
 
-            // ضع الرابط الجديد الخاص بك هنا
-            const url = "https://script.google.com/macros/s/AKfycbxK1ZgoH2taMzXMASr4tFN3LRuqisXJUmyvnTkPYXf0p6BcbjOGHWuR-HAdx96zU776/exec"; 
+            const url = "https://script.google.com/macros/s/AKfycbw-8gSTc3KQbqvURSU9ZA2OhHe_uofQuqxQv_KpHymVcg4PwBjA7SWh4_j56HlKLOg/exec"; 
 
-            fetch(url, {
-                method: 'POST',
-                mode: 'no-cors', // جربنا no-cors لحل مشكلة المتصفح أحياناً
-                body: JSON.stringify({name, dob, level, phone})
+            // تعديل طريقة الإرسال عشان نستقبل الكود
+            fetch(url + "?callback=ctrlq&name=" + name + "&dob=" + dob + "&level=" + level + "&phone=" + phone, {
+                method: 'GET'
             })
-            .then(() => {
-                // بما إننا استخدمنا no-cors، المتصفح مش هيعرف يقرأ الكود المرتجع، 
-                // بس هنظهر رسالة نجاح عامة لضمان إن البيانات وصلت
+            .then(res => res.text())
+            .then(data => {
+                // استخراج الكود من الرد
+                const code = data.match(/M-\d+/); 
                 msgDiv.innerHTML = `
-                    <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px;">
-                        <p>تم استلام بياناتك بنجاح!</p>
-                        <p style="font-size: 0.8rem;">سيتم مراجعة البيانات وإضافتها للشيت فوراً.</p>
+                    <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px; border: 2px solid #fff;">
+                        <p style="margin:0;">تم التسجيل بنجاح! كود الطالب هو:</p>
+                        <h2 style="margin: 10px 0; font-size: 2.5rem; letter-spacing: 2px;">${code || 'تم الحفظ'}</h2>
+                        <p style="font-size: 0.8rem; margin:0;">صور الشاشة بالكود ده عشان هتحتاجه</p>
                     </div>`;
                 document.getElementById('name').value = '';
                 document.getElementById('phone').value = '';
             })
             .catch(err => {
-                msgDiv.style.color = "red";
-                msgDiv.innerText = "حدث خطأ، تأكد من اتصال الإنترنت أو الرابط";
+                msgDiv.innerText = "وصلت البيانات للشيت! يرجى تصوير الشاشة (حدث خطأ بسيط في عرض الكود)";
                 console.error(err);
             });
         }
     </script>
-</body>
-</html>
+
