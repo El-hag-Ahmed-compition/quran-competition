@@ -79,31 +79,36 @@
             }
 
             msgDiv.style.color = "#ffd700";
-            msgDiv.innerText = "جاري إرسال البيانات وتوليد كودك الخاص...";
+            msgDiv.innerText = "جاري إرسال البيانات وتوليد الكود...";
 
-            const url = "https://script.google.com/macros/s/AKfycby_j_lAP2JpgX8X1RZWe3BAPFFAXuiZ-PQk9X3JCHEuSqkiKUJUl4MeYuk_ctqzrcZX/exec"; 
+            // ضع الرابط الجديد الخاص بك هنا (تأكد من عمل New Deployment في Apps Script)
+            const url = "https://script.google.com/macros/s/AKfycbw-8gSTc3KQbqvURSU9ZA2OhHe_uofQuqxQv_KpHymVcg4PwBjA7SWh4_j56HlKLOg/exec"; 
 
-            // تعديل طريقة الإرسال عشان نستقبل الكود
-            fetch(url + "?callback=ctrlq&name=" + name + "&dob=" + dob + "&level=" + level + "&phone=" + phone, {
-                method: 'GET'
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({name, dob, level, phone})
             })
-            .then(res => res.text())
+            .then(res => res.json()) // التعديل هنا لقراءة الـ JSON
             .then(data => {
-                // استخراج الكود من الرد
-                const code = data.match(/M-\d+/); 
-                msgDiv.innerHTML = `
-                    <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px; border: 2px solid #fff;">
-                        <p style="margin:0;">تم التسجيل بنجاح! كود الطالب هو:</p>
-                        <h2 style="margin: 10px 0; font-size: 2.5rem; letter-spacing: 2px;">${code || 'تم الحفظ'}</h2>
-                        <p style="font-size: 0.8rem; margin:0;">صور الشاشة بالكود ده عشان هتحتاجه</p>
-                    </div>`;
-                document.getElementById('name').value = '';
-                document.getElementById('phone').value = '';
+                if(data.status === "success") {
+                    msgDiv.innerHTML = `
+                        <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px; border: 2px solid #fff;">
+                            <p style="margin:0;">تم التسجيل بنجاح! كود الطالب هو:</p>
+                            <h2 style="margin: 10px 0; font-size: 2.5rem; letter-spacing: 2px;">${data.code}</h2>
+                            <p style="font-size: 0.8rem; margin:0;">صور الشاشة بهذا الكود</p>
+                        </div>`;
+                    document.getElementById('name').value = '';
+                    document.getElementById('phone').value = '';
+                } else {
+                    msgDiv.innerText = "حدث خطأ في السكريبت: " + data.message;
+                }
             })
             .catch(err => {
-                msgDiv.innerText = "وصلت البيانات للشيت! يرجى تصوير الشاشة (حدث خطأ بسيط في عرض الكود)";
+                msgDiv.style.color = "red";
+                msgDiv.innerText = "حدث خطأ، تأكد من اتصال الإنترنت أو الرابط الجديد";
                 console.error(err);
             });
         }
     </script>
-
+</body>
+</html>
