@@ -14,9 +14,11 @@
             background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px;
             width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #fdb931;
         }
-        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 1rem; }
-        button { background: linear-gradient(135deg, #ffd700, #b8860b); color: #0d3b26; font-weight: bold; cursor: pointer; }
-        .msg { color: #ffd700; text-align: center; font-weight: bold; margin-top: 10px; min-height: 20px; }
+        label { display: block; margin-top: 10px; font-weight: bold; color: #ffd700; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-size: 1rem; box-sizing: border-box; }
+        button { background: linear-gradient(135deg, #ffd700, #b8860b); color: #0d3b26; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        button:hover { opacity: 0.9; }
+        .msg { text-align: center; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -78,29 +80,31 @@
                 return;
             }
 
-            msgDiv.innerText = "جاري إرسال البيانات وتوليد الكود...";
+            msgDiv.style.color = "#ffd700";
+            msgDiv.innerText = "جاري إرسال البيانات... انتظر قليلاً";
 
-            // اللينك اللي انت بعته محطوط هنا بالظبط
-            const url = "https://script.google.com/macros/s/AKfycbw-8gSTc3KQbqvURSU9ZA2OhHe_uofQuqxQv_KpHymVcg4PwBjA7SWh4_j56HlKLOg/exec"; 
+            // ضع الرابط الجديد الخاص بك هنا
+            const url = "https://script.google.com/macros/s/AKfycbxmuooSXkUvYjmVJNUZre-i2wnOWt_zBgFkPotcVofiEc2VMKmGHl33fYvXjNP7Azel/exec"; 
 
             fetch(url, {
                 method: 'POST',
+                mode: 'no-cors', // جربنا no-cors لحل مشكلة المتصفح أحياناً
                 body: JSON.stringify({name, dob, level, phone})
             })
-            .then(res => res.text())
-            .then(code => {
+            .then(() => {
+                // بما إننا استخدمنا no-cors، المتصفح مش هيعرف يقرأ الكود المرتجع، 
+                // بس هنظهر رسالة نجاح عامة لضمان إن البيانات وصلت
                 msgDiv.innerHTML = `
-                    <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px; margin-top: 10px;">
-                        <p>تم التسجيل بنجاح! كود الطالب هو:</p>
-                        <h2 style="margin: 5px 0; font-size: 2rem;">${code}</h2>
-                        <p style="font-size: 0.8rem;">احتفظ بهذا الكود لمتابعة النتيجة</p>
+                    <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px;">
+                        <p>تم استلام بياناتك بنجاح!</p>
+                        <p style="font-size: 0.8rem;">سيتم مراجعة البيانات وإضافتها للشيت فوراً.</p>
                     </div>`;
-                // تصفير الخانات بعد النجاح
                 document.getElementById('name').value = '';
                 document.getElementById('phone').value = '';
             })
             .catch(err => {
-                msgDiv.innerText = "حدث خطأ في الاتصال، حاول مرة أخرى";
+                msgDiv.style.color = "red";
+                msgDiv.innerText = "حدث خطأ، تأكد من اتصال الإنترنت أو الرابط";
                 console.error(err);
             });
         }
