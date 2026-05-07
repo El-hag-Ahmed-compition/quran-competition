@@ -3,139 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة المتسابقين - الاستعلام</title>
+    <title>بوابة النتائج والمرحلة الثانية</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
         body {
-            background-color: #06301d;
-            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            color: #fff; font-family: 'Cairo', sans-serif;
-            margin: 0; display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; padding: 20px;
+            background-color: #06301d; background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            color: #fff; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px;
         }
-
         .search-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px; border-radius: 20px;
-            width: 100%; max-width: 400px;
-            border: 1px solid #fdb931; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px;
+            border: 1px solid #fdb931; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
-        h2 { color: #fdb931; margin-bottom: 20px; }
-
-        input {
-            width: 100%; padding: 15px; margin: 15px 0;
-            border-radius: 10px; border: none; font-size: 1.2rem;
-            text-align: center; outline: none;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #ffd700, #b8860b);
-            color: #06301d; width: 100%; padding: 15px;
-            border-radius: 12px; border: none; font-weight: bold;
-            font-size: 1.1rem; cursor: pointer; margin-bottom: 10px;
-        }
-
-        #resultBtn {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
-            color: #fff; width: 100%; padding: 15px;
-            border-radius: 12px; border: none; font-weight: bold;
-            font-size: 1.1rem; cursor: pointer; display: none; /* مخفي افتراضياً */
-        }
-
-        #displayArea { margin-top: 25px; width: 100%; }
-
-        .card {
-            background: #fff; color: #06301d;
-            padding: 20px; border-radius: 15px; text-align: right;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .status-badge {
-            display: block; padding: 15px; border-radius: 10px;
-            color: #fff; font-weight: bold; margin-top: 15px;
-            text-align: center; font-size: 1.3rem;
-        }
+        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; }
+        .btn-check { background: linear-gradient(135deg, #ffd700, #b8860b); color: #06301d; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
+        .result-card { background: #fff; color: #06301d; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: right; }
+        .status-tag { display: block; padding: 10px; border-radius: 8px; color: #fff; text-align: center; font-weight: bold; margin-top: 10px; }
+        .success { background: #28a745; }
+        .fail { background: #dc3545; }
+        .wait { background: #ffc107; color: #000; }
     </style>
 </head>
 <body>
 
     <div class="search-box">
-        <h2>استعلام المتسابقين</h2>
-        <p>أدخل كود الطالب (M-xxxx)</p>
-        <input type="text" id="studentCode" placeholder="M-1234">
-        
-        <button class="btn-info" onclick="fetchData('info')">معلومات الطالب</button>
-        <button id="resultBtn" onclick="fetchData('result')">عرض النتيجة النهائية</button>
-        
+        <h2 style="color: #fdb931;">استعلام النتائج</h2>
+        <input type="text" id="studentCode" placeholder="أدخل الكود M-xxxx">
+        <button class="btn-check" onclick="checkStatus()">استعلام الآن</button>
         <div id="displayArea"></div>
     </div>
 
     <script>
-        // ضع رابط الـ Apps Script الجديد هنا بعد الـ New Deployment
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbwH9WwBupsFSavccSd-qN74VHH7VE4PRnNRXtjNXKImTbS8mT8Wf2tQlwSZ5qFzoX3-/exec";
+        const scriptUrl = "رابط_السكريبت_الخاص_بك_هنا";
 
-        function fetchData(type) {
+        function checkStatus() {
             const code = document.getElementById('studentCode').value.trim();
-            const displayArea = document.getElementById('displayArea');
-            const resultBtn = document.getElementById('resultBtn');
-            
-            if(!code) {
-                alert("من فضلك أدخل كود الطالب");
-                return;
-            }
+            const area = document.getElementById('displayArea');
+            if(!code) return alert("أدخل الكود");
 
-            displayArea.innerHTML = "<p style='color:#fdb931'>جاري البحث في السجلات...</p>";
+            area.innerHTML = "<p>جاري جلب البيانات...</p>";
 
             fetch(`${scriptUrl}?action=checkStatus&code=${code}`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "found") {
-                    // إذا تغيرت الحالة من "قيد المراجعة" يظهر زرار النتيجة
-                    if (data.studentStatus !== "قيد المراجعة") {
-                        resultBtn.style.display = "block";
-                    } else {
-                        resultBtn.style.display = "none";
+                    let html = `
+                        <div class="result-card">
+                            <h3>مرحباً: ${data.name}</h3>
+                            <p><b>نتيجة المرحلة الأولى (التصفية):</b></p>
+                            <span class="status-tag ${getStatusClass(data.res1)}">${data.res1}</span>
+                    `;
+                    
+                    // إذا كان مؤهل للمرحلة الأولى، تظهر نتيجة المرحلة الثانية
+                    if(data.res1 === "مؤهل") {
+                        html += `
+                            <hr>
+                            <p><b>نتيجة المرحلة الثانية (النهائية):</b></p>
+                            <span class="status-tag ${getStatusClass(data.res2)}">${data.res2}</span>
+                        `;
                     }
-
-                    if(type === 'info') {
-                        const dob = new Date(data.dob);
-                        const age = new Date().getFullYear() - dob.getFullYear();
-                        displayArea.innerHTML = `
-                            <div class="card">
-                                <h3 style="border-bottom: 2px solid #fdb931; padding-bottom: 8px;">بيانات الطالب</h3>
-                                <p><b>الاسم:</b> ${data.name}</p>
-                                <p><b>المستوى:</b> ${data.level}</p>
-                                <p><b>السن:</b> ${age} سنة</p>
-                                <p style="font-size: 0.8rem; color: #666;">* النتيجة ستظهر هنا فور اعتمادها.</p>
-                            </div>`;
-                    } else if (type === 'result') {
-                        let color = "#28a745"; // أخضر للمؤهل
-                        if(data.studentStatus === "غير مؤهل") color = "#dc3545"; // أحمر
-
-                        displayArea.innerHTML = `
-                            <div class="card" style="text-align:center">
-                                <h3>النتيجة الرسمية</h3>
-                                <p>المتسابق: <b>${data.name}</b></p>
-                                <div class="status-badge" style="background:${color}">
-                                    ${data.studentStatus}
-                                </div>
-                            </div>`;
-                    }
+                    
+                    html += `</div>`;
+                    area.innerHTML = html;
                 } else {
-                    displayArea.innerHTML = "<p style='color:#ff4d4d'>عذراً، هذا الكود غير مسجل لدينا.</p>";
-                    resultBtn.style.display = "none";
+                    area.innerHTML = "<p style='color:red'>الكود غير موجود</p>";
                 }
-            })
-            .catch(err => {
-                displayArea.innerHTML = "<p style='color:#ff4d4d'>حدث خطأ في الاتصال بالسيرفر</p>";
-                console.error(err);
             });
+        }
+
+        function getStatusClass(status) {
+            if(status === "مؤهل" || status === "ناجح" || status.includes("الأول")) return "success";
+            if(status === "غير مؤهل" || status === "لم يوفق") return "fail";
+            return "wait";
         }
     </script>
 </body>
