@@ -10,54 +10,60 @@
         * { box-sizing: border-box; }
         body {
             background-color: #06301d;
+            /* النقشة الأرابيسك الذهبي الخفيفة */
             background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            background-blend-mode: overlay;
             color: #fff; font-family: 'Cairo', sans-serif;
             margin: 0; display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; padding: 15px; text-align: center;
         }
 
-        .top-title { color: #fdb931; font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
+        .top-title { color: #fdb931; font-weight: bold; font-size: 1.4rem; margin-top: 10px; text-shadow: 1px 1px 2px #000; }
         
-        .logo { width: 140px; margin: 15px 0; filter: drop-shadow(0 0 10px rgba(253,185,49,0.3)); }
+        /* ضبط اللوجو ليكون في النص */
+        .logo-container { width: 180px; height: 180px; margin: 10px 0; }
+        .logo { width: 100%; height: auto; filter: drop-shadow(0 0 8px rgba(253,185,49,0.5)); }
 
-        .bismillah { font-family: 'Amiri Quran', serif; font-size: 2.2rem; margin-bottom: 10px; }
+        .bismillah { font-family: 'Amiri Quran', serif; font-size: 2.5rem; margin: 5px 0; color: #fff; }
 
         .quran-verse {
-            font-family: 'Amiri Quran', serif; font-size: 1.3rem; color: #fdb931;
-            max-width: 320px; line-height: 1.6; margin-bottom: 25px;
+            font-family: 'Amiri Quran', serif; font-size: 1.4rem; color: #fdb931;
+            max-width: 350px; line-height: 1.8; margin-bottom: 20px;
         }
 
         .buttons-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            width: 100%; max-width: 350px; margin-top: 10px;
+            width: 100%; max-width: 380px; margin-top: 10px;
         }
 
         .btn {
             background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
-            color: #06301d; border: none; padding: 12px; border-radius: 20px;
-            font-weight: bold; font-size: 1rem; text-decoration: none;
+            color: #06301d; border: none; padding: 15px; border-radius: 25px;
+            font-weight: bold; font-size: 1.1rem; text-decoration: none;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s;
         }
 
-        /* زر سجل الآن في المنتصف */
         .register-btn {
-            grid-column: span 2; margin: 10px auto; width: 60%;
-            padding: 18px; font-size: 1.4rem; border-radius: 30px;
+            grid-column: span 2; margin: 10px auto; width: 70%;
+            padding: 20px; font-size: 1.6rem; border-radius: 35px;
+            box-shadow: 0 0 20px rgba(253,185,49,0.4);
         }
 
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(253,185,49,0.4); }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        .footer-note { margin-top: auto; color: #fdb931; font-weight: bold; font-size: 1.1rem; padding: 20px 0; }
+        .footer-note { margin-top: auto; color: #fdb931; font-weight: bold; font-size: 1.3rem; padding: 25px 0; }
         
-        .bottom-line { width: 100%; height: 25px; background: #042416; position: fixed; bottom: 0; }
+        .bottom-line { width: 100%; height: 30px; background: #042416; border-top: 2px solid #b8860b; position: fixed; bottom: 0; }
     </style>
 </head>
 <body>
 
     <div class="top-title">مسابقة مسجد الحاج أحمد الملهود</div>
     
-    <img src="https://i.ibb.co/3ykH79p/logo.png" class="logo" alt="لوجو المسابقة">
+    <div class="logo-container">
+        <img src="https://i.ibb.co/6YmH9m0/1000094765.png" class="logo" alt="لوجو المسابقة">
+    </div>
 
     <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
 
@@ -79,17 +85,14 @@
     <div class="bottom-line"></div>
 
     <script>
-        // تحديد تاريخ نهاية التسجيل (سنة، شهر-1، يوم)
-        // مثال: نهاية التسجيل يوم 15 مايو 2026
-        const deadline = new Date(2026, 4, 15); 
-        const today = new Date();
-
-        if (today > deadline) {
+        // لو حابب تقفل التسجيل في تاريخ معين أوتوماتيك
+        const deadline = new Date("2026-05-15T23:59:59"); 
+        if (new Date() > deadline) {
             const btn = document.getElementById('regBtn');
             btn.innerText = "انتهى موعد التسجيل";
-            btn.style.background = "gray";
+            btn.style.background = "#555";
+            btn.style.color = "#ccc";
             btn.style.pointerEvents = "none";
-            btn.href = "#";
         }
     </script>
 </body>
