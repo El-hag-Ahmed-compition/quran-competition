@@ -3,77 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة النتائج والمرحلة الثانية</title>
+    <title>بوابة المتسابق - مسجد الملهود</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             background-color: #06301d; background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
             color: #fff; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px;
         }
-        .search-box {
-            background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px;
-            border: 1px solid #fdb931; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .container { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; border: 1px solid #fdb931; width: 100%; max-width: 400px; text-align: center; }
+        input { width: 90%; padding: 12px; border-radius: 10px; border: none; margin: 10px 0; text-align: center; font-size: 1.1rem; }
+        .btn { background: #fdb931; color: #06301d; padding: 12px; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
+        
+        #resultArea { display: none; margin-top: 20px; background: #fff; color: #06301d; padding: 20px; border-radius: 15px; }
+
+        /* الكارت المخفي للتحميل */
+        #final-card {
+            width: 380px; background: #fff; border: 6px solid #06301d; border-radius: 15px;
+            position: absolute; left: -9999px; font-family: 'Cairo', sans-serif; color: #06301d; overflow: hidden;
         }
-        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; }
-        .btn-check { background: linear-gradient(135deg, #ffd700, #b8860b); color: #06301d; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
-        .result-card { background: #fff; color: #06301d; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: right; }
-        .status-tag { display: block; padding: 10px; border-radius: 8px; color: #fff; text-align: center; font-weight: bold; margin-top: 10px; }
-        .success { background: #28a745; }
-        .fail { background: #dc3545; }
-        .wait { background: #ffc107; color: #000; }
+        .card-header { background: #06301d; color: #fdb931; padding: 12px; font-weight: bold; font-size: 1.2rem; text-align: center; border-bottom: 4px solid #fdb931; }
+        .card-body { padding: 15px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+        .card-info p { margin: 6px 0; border-bottom: 1px solid #eee; padding-bottom: 3px; font-size: 0.95rem; }
+        #qr-box { border: 2px solid #06301d; padding: 5px; background: #fff; }
     </style>
 </head>
 <body>
 
-    <div class="search-box">
-        <h2 style="color: #fdb931;">استعلام النتائج</h2>
-        <input type="text" id="studentCode" placeholder="أدخل الكود M-xxxx">
-        <button class="btn-check" onclick="checkStatus()">استعلام الآن</button>
-        <div id="displayArea"></div>
+    <div class="container">
+        <h2 style="color: #fdb931;">استعلام عن متسابق</h2>
+        <input type="text" id="sCode" placeholder="أدخل الكود (M-xxxx)">
+        <button class="btn" onclick="check()">بحث</button>
+
+        <div id="resultArea">
+            <h3 id="resName"></h3>
+            <p>الحالة: <b id="resStatus"></b></p>
+            <button class="btn" style="background:#06301d; color:#fdb931;" onclick="downloadCard()">⬇️ تحميل كارت الطالب</button>
+        </div>
+    </div>
+
+    <div id="final-card">
+        <div class="card-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
+        <div class="card-body">
+            <div class="card-info" id="cardData"></div>
+            <div id="qr-box"></div>
+        </div>
+        <div style="background:#fdb931; color:#06301d; font-size:11px; padding:5px; font-weight:bold; text-align:center;">يرجى إبراز الكارت عند دخول الاختبار</div>
     </div>
 
     <script>
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbzUUCmD-prnXv2hGd1rUmzZe1I7TLZ-dovrZfwQXOftz9COPwByeB9rDcCAVnSfOEEW/exec";
+        const webAppUrl = "رابط_السكربت_الخاص_بك"; // حط هنا رابط الـ Web App
+        let student = {};
 
-        function checkStatus() {
-            const code = document.getElementById('studentCode').value.trim();
-            const area = document.getElementById('displayArea');
-            if(!code) return alert("أدخل الكود");
+        function check() {
+            const code = document.getElementById('sCode').value.trim();
+            if(!code) return alert("ادخل الكود أولاً");
 
-            area.innerHTML = "<p>جاري جلب البيانات...</p>";
-
-            fetch(`${scriptUrl}?action=checkStatus&code=${code}`)
-            .then(res => res.json())
-            .then(data => {
+            fetch(`${webAppUrl}?action=checkStatus&code=${code}`)
+            .then(r => r.json()).then(data => {
                 if(data.status === "found") {
-                    let html = `
-                        <div class="result-card">
-                            <h3>مرحباً: ${data.name}</h3>
-                            <p><b>نتيجة المرحلة الأولى (التصفية):</b></p>
-                            <span class="status-tag ${getStatusClass(data.res1)}">${data.res1}</span>
-                    `;
-                    
-                    // إذا كان مؤهل للمرحلة الأولى، تظهر نتيجة المرحلة الثانية
-                    if(data.res1 === "مؤهل") {
-                        html += `
-                            <hr>
-                            <p><b>نتيجة المرحلة الثانية (النهائية):</b></p>
-                            <span class="status-tag ${getStatusClass(data.res2)}">${data.res2}</span>
-                        `;
-                    }
-                    
-                    html += `</div>`;
-                    area.innerHTML = html;
-                } else {
-                    area.innerHTML = "<p style='color:red'>الكود غير موجود</p>";
-                }
+                    student = data; student.code = code;
+                    document.getElementById('resultArea').style.display = "block";
+                    document.getElementById('resName').innerText = "مرحباً: " + data.name;
+                    document.getElementById('resStatus').innerText = data.res1;
+                } else { alert("الكود غير صحيح"); }
             });
         }
 
-        function getStatusClass(status) {
-            if(status === "مؤهل" || status === "ناجح" || status.includes("الأول")) return "success";
-            if(status === "غير مؤهل" || status === "لم يوفق") return "fail";
-            return "wait";
+        function downloadCard() {
+            // ملء بيانات الكارت
+            document.getElementById('cardData').innerHTML = `
+                <p><b>الاسم:</b> ${student.name}</p>
+                <p><b>السن:</b> ${student.age} سنة</p>
+                <p><b>المستوى:</b> ${student.level}</p>
+                <p><b>الكود:</b> ${student.code}</p>
+                <p><b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</p>
+            `;
+            // توليد الـ QR
+            document.getElementById('qr-box').innerHTML = "";
+            new QRCode(document.getElementById("qr-box"), { text: student.code, width: 90, height: 90 });
+
+            // تحويل الكارت لصورة
+            setTimeout(() => {
+                html2canvas(document.querySelector("#final-card"), { scale: 2 }).then(canvas => {
+                    let a = document.createElement('a');
+                    a.download = `كارت-${student.name}.png`;
+                    a.href = canvas.toDataURL();
+                    a.click();
+                });
+            }, 600);
         }
     </script>
 </body>
