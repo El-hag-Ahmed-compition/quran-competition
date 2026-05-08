@@ -2,66 +2,65 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>بوابة النتائج</title>
+    <title>بوابة معلومات الطالب</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { background: #06301d; color: #fff; text-align: center; font-family: sans-serif; }
         .box { border: 1px solid #fdb931; padding: 20px; border-radius: 15px; max-width: 450px; margin: auto; }
-        .res-box { display: none; background: #fff; color: #000; padding: 15px; margin-top: 15px; border-radius: 10px; }
-        #hiddenCard { width: 400px; background: #fff; color: #000; border: 5px solid #06301d; position: absolute; left: -9999px; }
+        .res-card { display: none; background: #fff; color: #000; padding: 20px; margin-top: 20px; border-radius: 10px; }
+        #finalCard { width: 400px; background: #fff; color: #000; border: 4px solid #06301d; position: absolute; left: -9999px; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2>استعلام النتائج</h2>
-        <input type="text" id="c" placeholder="أدخل كودك M-xxxx" style="padding:10px; width:80%;">
-        <button onclick="check()" style="padding:10px; background:#fdb931; border:none; margin-top:10px; cursor:pointer;">استعلام</button>
+        <h2 style="color:#fdb931">استعلام معلومات الطالب</h2>
+        <input type="text" id="codeIn" placeholder="أدخل كودك M-xxxx" style="padding:10px; width:70%; border-radius:5px;">
+        <button onclick="search()" style="padding:10px; background:#fdb931; border:none; cursor:pointer; font-weight:bold;">استعلام الآن</button>
 
-        <div id="rb" class="res-box">
-            <h3 id="rn"></h3>
-            <p>السن: <b id="ra"></b></p>
-            <p>النتيجة: <b id="rr"></b></p>
-            <button onclick="saveCard()" style="padding:10px; background:#06301d; color:#fdb931; border:none; cursor:pointer;">تحميل الكارت</button>
+        <div id="resultArea" class="res-card">
+            <h3 id="displayName"></h3>
+            <p>السن: <b id="displayAge"></b> سنة</p> <p>النتيجة: <b id="displayRes" style="background:#28a745; color:#fff; padding:5px 10px; border-radius:5px;"></b></p>
+            <button onclick="downloadCard()" style="padding:10px; background:#06301d; color:#fdb931; border:none; cursor:pointer; width:100%;">تحميل كارت الطالب ⬇️</button>
         </div>
     </div>
 
-    <div id="hiddenCard">
-        <div style="background:#06301d; color:#fdb931; padding:10px; text-align:center;">بطاقة متسابق | مسجد الملهود</div>
-        <div style="padding:15px; display:flex; justify-content:space-between;">
-            <div id="ctext" style="text-align:right;"></div>
-            <div id="cqr"></div>
+    <div id="finalCard">
+        <div style="background:#06301d; color:#fdb931; padding:10px; font-weight:bold;">بطاقة متسابق | مسجد الملهود</div>
+        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+            <div id="cardInfo" style="text-align:right; font-size:1.1rem;"></div>
+            <div id="cardQR"></div>
         </div>
+        <div style="background:#fdb931; color:#06301d; padding:5px; font-size:0.8rem;">يرجى إبراز الكارت عند دخول المسجد</div>
     </div>
 
     <script>
-        const sURL = "https://script.google.com/macros/s/AKfycbz8uxwflUhCnwHA29G3dDU0jq62aG0_xuyzaArf-WDjxEq0hFHnPUWtmOkBiYf958UG/exec";
-        let curData = {};
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxtjn9dp7ZS_7DJxaWuDmBo2wQCu3ytxhs58qnXd_h-zGjxLG2O2nHN-xiqCabrrfUk/exec";
+        let student = {};
 
-        function check() {
-            const code = document.getElementById('c').value;
-            fetch(`${sURL}?action=checkStatus&code=${code}`).then(r=>r.json()).then(d=>{
-                if(d.status==="found") {
-                    curData = d; curData.code = code;
-                    document.getElementById('rb').style.display="block";
-                    document.getElementById('rn').innerText = d.name;
-                    document.getElementById('ra').innerText = d.age; // هيظهر صح
-                    document.getElementById('rr').innerText = d.res1;
-                } else { alert("الكود خطأ"); }
+        function search() {
+            const code = document.getElementById('codeIn').value;
+            fetch(`${scriptURL}?action=checkStatus&code=${code}`).then(r=>r.json()).then(d=>{
+                if(d.status === "found") {
+                    student = d; student.code = code;
+                    document.getElementById('resultArea').style.display = "block";
+                    document.getElementById('displayName').innerText = "مرحباً: " + d.name;
+                    document.getElementById('displayAge').innerText = d.age;
+                    document.getElementById('displayRes').innerText = d.res1;
+                } else { alert("الكود غير صحيح أو لم يتم تسجيله بعد"); }
             });
         }
 
-        function saveCard() {
-            document.getElementById('ctext').innerHTML = `الاسم: ${curData.name}<br>السن: ${curData.age}<br>الكود: ${curData.code}`;
-            document.getElementById('cqr').innerHTML = "";
-            new QRCode(document.getElementById("cqr"), { text: curData.code, width: 80, height: 80 });
+        function downloadCard() {
+            document.getElementById('cardInfo').innerHTML = `الاسم: ${student.name}<br>السن: ${student.age}<br>الكود: ${student.code}`;
+            document.getElementById('cardQR').innerHTML = "";
+            new QRCode(document.getElementById("cardQR"), { text: student.code, width: 90, height: 90 });
             
-            // حل مشكلة الـ QR اللي مش بيظهر: استنى ثانية قبل التصوير
             setTimeout(() => {
-                html2canvas(document.getElementById('hiddenCard')).then(cv => {
-                    let a = document.createElement('a'); a.download=`كارت-${curData.name}.png`; a.href=cv.toDataURL(); a.click();
+                html2canvas(document.getElementById('finalCard')).then(canvas => {
+                    let a = document.createElement('a'); a.download=`كارت-${student.name}.png`; a.href=canvas.toDataURL(); a.click();
                 });
-            }, 1000);
+            }, 1000); // انتظار لضمان رسم الـ QR
         }
     </script>
 </body>
