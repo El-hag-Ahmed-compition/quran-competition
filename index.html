@@ -2,103 +2,49 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسابقة مسجد الحاج أحمد الملهود</title>
+    <title>تسجيل المتسابقين</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&display=swap');
-
-        * { box-sizing: border-box; }
-        body {
-            background-color: #06301d;
-            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            background-blend-mode: overlay;
-            color: #fff; font-family: 'Cairo', sans-serif;
-            margin: 0; display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; padding: 20px; text-align: center;
-        }
-
-        .top-title { 
-            color: #fdb931; font-weight: bold; font-size: 1.6rem; 
-            margin-top: 30px; margin-bottom: 20px;
-            text-shadow: 1px 1px 2px #000; 
-        }
-
-        .bismillah { 
-            font-family: 'Amiri Quran', serif; font-size: 2.8rem; 
-            margin: 20px 0; color: #fff; 
-        }
-
-        .quran-verse {
-            font-family: 'Amiri Quran', serif; font-size: 1.5rem; color: #fdb931;
-            max-width: 400px; line-height: 1.8; margin: 20px auto 40px;
-        }
-
-        .buttons-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-            width: 100%; max-width: 400px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
-            color: #06301d; border: none; padding: 18px; border-radius: 25px;
-            font-weight: bold; font-size: 1.1rem; text-decoration: none;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s;
-        }
-
-        .register-btn {
-            grid-column: span 2; margin: 10px auto; width: 85%;
-            padding: 22px; font-size: 1.8rem; border-radius: 40px;
-            box-shadow: 0 0 25px rgba(253,185,49,0.4);
-        }
-
-        .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
-
-        .footer-note { 
-            margin-top: auto; color: #fdb931; font-weight: bold; 
-            font-size: 1.4rem; padding: 40px 0; 
-        }
-        
-        .bottom-line { 
-            width: 100%; height: 15px; background: #042416; 
-            border-top: 2px solid #b8860b; position: fixed; bottom: 0; 
-        }
+        body { background: #06301d; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        .box { border: 1px solid #fdb931; padding: 20px; border-radius: 15px; max-width: 400px; margin: auto; }
+        input, select { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .btn { background: #fdb931; color: #06301d; padding: 12px; width: 95%; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="top-title">مسابقة مسجد الحاج أحمد الملهود</div>
-    
-    <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-
-    <div class="quran-verse">
-        قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ (58)
+    <div class="box">
+        <h2>تسجيل المتسابق</h2>
+        <form id="regForm">
+            <input type="text" name="name" placeholder="الاسم رباعي" required>
+            <input type="date" name="birthDate" required>
+            <select name="level" required>
+                <option value="المستوى الأول">المستوى الأول</option>
+                <option value="المستوى الثاني">المستوى الثاني</option>
+            </select>
+            <input type="tel" name="phone" placeholder="رقم الهاتف" required>
+            <button type="submit" class="btn" id="subBtn">إرسال البيانات</button>
+        </form>
+        <div id="msg" style="margin-top:10px;"></div>
     </div>
-
-    <div class="buttons-grid">
-        <a href="rules.html" class="btn">الشروط</a>
-        <a href="levels.html" class="btn">المستويات</a>
-        
-        <a href="register.html" class="btn register-btn" id="regBtn">سجل الآن</a>
-
-        <a href="status.html" class="btn">معلومات الطالب</a>
-        <a href="schedule.html" class="btn">المواعيد</a>
-    </div>
-
-    <div class="footer-note">نحو جيل متقن لكتاب الله</div>
-    <div class="bottom-line"></div>
 
     <script>
-        // إغلاق التسجيل أوتوماتيكياً في الموعد المحدد
-        const deadline = new Date("2026-05-15T23:59:59"); 
-        if (new Date() > deadline) {
-            const btn = document.getElementById('regBtn');
-            btn.innerText = "انتهى موعد التسجيل";
-            btn.style.background = "#444";
-            btn.style.color = "#999";
-            btn.style.pointerEvents = "none";
-            btn.style.boxShadow = "none";
-        }
+        // حط الرابط اللي نسخته من جوجل هنا
+        const scriptURL = "حط_هنا_رابط_الـ_Web_App_بتاعك";
+
+        document.getElementById('regForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('subBtn');
+            btn.disabled = true; btn.innerText = "جاري الحفظ...";
+            fetch(scriptURL, { method: 'POST', body: new FormData(this) })
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === "success") {
+                    document.getElementById('msg').innerHTML = "تم التسجيل! كودك: " + data.code;
+                    this.reset();
+                }
+            })
+            .catch(() => alert("خطأ في الرابط أو الإنترنت"))
+            .finally(() => { btn.disabled = false; btn.innerText = "إرسال البيانات"; });
+        });
     </script>
 </body>
 </html>
