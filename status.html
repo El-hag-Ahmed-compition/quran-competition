@@ -37,7 +37,7 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzOEL_1C8pVhjXlyC_GlMrM66DMhciNs8SJgVnqBuPSfHnYCH98dTovsJsZxjUsslxj/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec';
         let st = {};
         function search() {
             fetch(`${scriptURL}?action=checkStatus&code=${document.getElementById('cIn').value}`).then(r=>r.json()).then(d=>{
