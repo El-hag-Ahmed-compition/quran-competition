@@ -1,114 +1,45 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل المتسابقين</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج تسجيل المتسابق</title>
     <style>
-        body {
-            background-color: #0d3b26;
-            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px;
-        }
-        .form-container {
-            background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px;
-            width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #fdb931;
-        }
-        label { display: block; margin-top: 10px; font-weight: bold; color: #ffd700; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-size: 1rem; box-sizing: border-box; }
-        button { background: linear-gradient(135deg, #ffd700, #b8860b); color: #0d3b26; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        button:hover { opacity: 0.9; }
-        .msg { text-align: center; font-weight: bold; margin-top: 15px; }
+        body { background: #06301d; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; border: 1px solid #fdb931; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 15px #fdb931; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; box-sizing: border-box; text-align: center; font-size: 1rem; }
+        .btn-sub { background: #fdb931; color: #06301d; padding: 15px; width: 100%; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <h2>نموذج تسجيل المتسابق</h2>
-    
-    <div class="form-container">
-        <label>اسم الطالب رباعي:</label>
-        <input type="text" id="name" placeholder="ادخل الاسم كاملاً">
-
-        <label>تاريخ الميلاد:</label>
-        <input type="date" id="dob" onchange="calculateLevels()">
-
-        <label>المستوى المتاح لك:</label>
-        <select id="levelSelect">
-            <option value="">ادخل تاريخ الميلاد أولاً</option>
-        </select>
-
-        <label>رقم ولي الأمر (واتساب):</label>
-        <input type="tel" id="phone" placeholder="01xxxxxxxxx">
-
-        <button onclick="submitData()">إرسال البيانات</button>
-        <div id="responseMsg" class="msg"></div>
+    <div class="box">
+        <h2 style="color:#fdb931">نموذج تسجيل المتسابق</h2>
+        <form id="regForm">
+            <input type="text" name="name" placeholder="الاسم رباعي" required>
+            <input type="date" name="birthDate" required>
+            <select name="level" required>
+                <option value="المستوى الأول">المستوى الأول (قرآن كامل)</option>
+                <option value="المستوى الثاني">المستوى الثاني (نصف القرآن)</option>
+            </select>
+            <input type="tel" name="phone" placeholder="رقم ولي الأمر (واتساب)" required>
+            <button type="submit" class="btn-sub" id="subBtn">إرسال البيانات</button>
+        </form>
+        <div id="msg" style="margin-top:15px; font-weight:bold;"></div>
     </div>
-
     <script>
-        function calculateLevels() {
-            const dobValue = document.getElementById('dob').value;
-            if (!dobValue) return;
-            
-            const dob = new Date(dobValue);
-            const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            const levelSelect = document.getElementById('levelSelect');
-            
-            let options = '<option value="">اختر المستوى...</option>';
-            if (age <= 10) options += '<option value="5">المستوى الخامس (5 أجزاء)</option>';
-            if (age <= 11) options += '<option value="4">المستوى الرابع (ربع القرآن)</option>';
-            if (age <= 13) options += '<option value="3">المستوى الثالث (ثلث القرآن)</option>';
-            if (age <= 15) options += '<option value="2">المستوى الثاني (نصف القرآن)</option>';
-            if (age <= 20) options += '<option value="1">المستوى الأول (قرآن كامل)</option>';
-
-            levelSelect.innerHTML = (options === '<option value="">اختر المستوى...</option>') 
-                ? '<option value="">عذراً، السن تجاوز الحد الأقصى</option>' 
-                : options;
-        }
-
-        function submitData() {
-            const name = document.getElementById('name').value;
-            const dob = document.getElementById('dob').value;
-            const level = document.getElementById('levelSelect').value;
-            const phone = document.getElementById('phone').value;
-            const msgDiv = document.getElementById('responseMsg');
-
-            if(!name || !dob || !level || !phone) {
-                alert("برجاء إكمال كافة البيانات");
-                return;
-            }
-
-            msgDiv.style.color = "#ffd700";
-            msgDiv.innerText = "جاري إرسال البيانات وتوليد الكود...";
-
-            // ضع الرابط الجديد الخاص بك هنا (تأكد من عمل New Deployment في Apps Script)
-            const url = "https://script.google.com/macros/s/AKfycbzTHBdub58gbHdaYeyCsQu5dD0Nq8LpTD-_3eSsN9k60X8RCnE7BDofJjASQqj4TsE/exec"; 
-
-            fetch(url, {
-                method: 'POST',
-                body: JSON.stringify({name, dob, level, phone})
-            })
-            .then(res => res.json()) // التعديل هنا لقراءة الـ JSON
-            .then(data => {
-                if(data.status === "success") {
-                    msgDiv.innerHTML = `
-                        <div style="background: #fdb931; color: #0d3b26; padding: 15px; border-radius: 10px; border: 2px solid #fff;">
-                            <p style="margin:0;">تم التسجيل بنجاح! كود الطالب هو:</p>
-                            <h2 style="margin: 10px 0; font-size: 2.5rem; letter-spacing: 2px;">${data.code}</h2>
-                            <p style="font-size: 0.8rem; margin:0;">صور الشاشة بهذا الكود</p>
-                        </div>`;
-                    document.getElementById('name').value = '';
-                    document.getElementById('phone').value = '';
-                } else {
-                    msgDiv.innerText = "حدث خطأ في السكريبت: " + data.message;
+        const scriptURL = "حط_هنا_رابط_الـ_Web_App_بتاعك"; // الرابط من جوجل سكريبت
+        document.getElementById('regForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('subBtn');
+            btn.disabled = true; btn.innerText = "جاري الحفظ...";
+            fetch(scriptURL, { method: 'POST', body: new FormData(this) })
+            .then(res => res.json()).then(data => {
+                if(data.result === "success") {
+                    document.getElementById('msg').innerHTML = `تم التسجيل بنجاح!<br>كودك: <span style="color:#fdb931; font-size:1.5rem">${data.code}</span>`;
+                    this.reset();
                 }
-            })
-            .catch(err => {
-                msgDiv.style.color = "red";
-                msgDiv.innerText = "حدث خطأ، تأكد من اتصال الإنترنت أو الرابط الجديد";
-                console.error(err);
-            });
-        }
+            }).catch(() => { document.getElementById('msg').innerText = "حدث خطأ، تأكد من الرابط أو الإنترنت"; })
+            .finally(() => { btn.disabled = false; btn.innerText = "إرسال البيانات"; });
+        });
     </script>
 </body>
 </html>
