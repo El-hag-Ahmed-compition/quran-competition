@@ -3,115 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة النتائج والكارنيه</title>
+    <title>بوابة المتسابق - مسجد الملهود</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-        body {
-            background-color: #06301d; background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            color: #fff; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px;
-        }
-        .main-box { background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; border: 1px solid #fdb931; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body { background-color: #06301d; color: #fff; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .main-container { background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid #fdb931; width: 100%; max-width: 450px; text-align: center; }
         input { width: 100%; padding: 15px; border-radius: 12px; border: none; margin: 15px 0; text-align: center; font-size: 1.2rem; box-sizing: border-box; }
         .btn-gold { background: #fdb931; color: #06301d; padding: 15px; border: none; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
         
-        /* صندوق النتيجة - مخفي تماماً في البداية */
-        #resultSection { display: none; background: #fff; color: #06301d; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .badge { background: #fdb931; padding: 10px; border-radius: 10px; font-weight: bold; margin: 15px 0; }
+        /* تصميم صندوق النتيجة الأبيض */
+        #resultView { display: none; background: #fff; color: #06301d; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: right; }
+        .res-item { background: #fdb931; padding: 12px; border-radius: 10px; font-weight: bold; margin: 10px 0; text-align: center; }
 
-        /* الكارت المخفي للتحميل */
-        #hiddenCard { width: 400px; background: #fff; border: 8px solid #06301d; border-radius: 20px; position: absolute; left: -9999px; color: #06301d; }
-        .card-header { background: #06301d; color: #fdb931; padding: 15px; font-weight: bold; text-align: center; }
-        .card-body { padding: 20px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+        /* الكارت المخفي للتصوير */
+        #idCard { width: 400px; background: #fff; border: 6px solid #06301d; position: absolute; left: -9999px; color: #000; }
+        .card-header { background: #06301d; color: #fdb931; padding: 10px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="main-box">
-        <h2 id="titleText" style="color: #fdb931;">استعلام النتائج</h2>
+    <div class="main-container">
+        <h2 id="headerTitle" style="color: #fdb931;">استعلام النتائج</h2>
         
-        <div id="searchUI">
-            <input type="text" id="studentCode" placeholder="أدخل الكود M-xxxx">
-            <button class="btn-gold" onclick="searchStudent()">استعلام الآن</button>
+        <div id="searchBox">
+            <input type="text" id="cInput" placeholder="أدخل كود الطالب M-xxxx">
+            <button class="btn-gold" onclick="fetchStudentData()">استعلام الآن</button>
         </div>
 
-        <div id="resultSection">
-            <h3 id="displayName"></h3>
-            <p>نتيجة المرحلة الأولى (التصفية):</p>
-            <div id="displayStatus" class="badge"></div>
-            <button class="btn-gold" style="background: #06301d; color: #fdb931;" onclick="downloadMyCard()">⬇️ تحميل كارت الطالب</button>
+        <div id="resultView">
+            <h3 id="sName" style="text-align: center;"></h3>
+            <hr>
+            <p><b>نتيجة المرحلة الأولى (التصفية):</b></p>
+            <div id="r1" class="res-item"></div>
+            
+            <p><b>نتيجة المرحلة الثانية (النهائية):</b></p>
+            <div id="r2" class="res-item"></div>
+
+            <button class="btn-gold" style="background:#06301d; color:#fdb931; margin-top:20px;" onclick="downloadCard()">⬇️ تحميل كارت الطالب</button>
         </div>
     </div>
 
-    <div id="hiddenCard">
-        <div class="card-header">بطاقة متسابق | مسجد الملهود</div>
-        <div class="card-body">
-            <div id="cardText" style="line-height: 1.8;"></div>
-            <div id="qrcode"></div>
+    <div id="idCard">
+        <div class="card-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px;">
+            <div id="cardDetails" style="line-height: 1.8; font-weight: bold; text-align: right;"></div>
+            <div id="cardQR"></div>
         </div>
-        <div style="background:#fdb931; color:#06301d; padding:5px; font-size:12px; font-weight:bold; text-align:center;">يرجى إبراز الكارت عند دخول الاختبار</div>
+        <div style="background:#fdb931; color:#000; text-align:center; font-size:12px; padding:5px; font-weight:bold;">يرجى إبراز الكارت عند دخول الاختبار</div>
     </div>
 
     <script>
-        const scriptURL = "رابط_السكربت_الخاص_بك"; // حط رابط الـ Web App هنا
-        let studentData = {};
+        const scriptURL = "رابط_السكربت_الخاص_بك"; // ضع رابط الـ Web App هنا
+        let student = {};
 
-        async function searchStudent() {
-            const code = document.getElementById('studentCode').value.trim();
-            if (!code) return alert("اكتب الكود الأول يا بطل");
-
+        function fetchStudentData() {
+            const code = document.getElementById('cInput').value.trim();
+            if(!code) return alert("اكتب الكود أولاً");
+            
             const btn = document.querySelector('.btn-gold');
             btn.innerText = "جاري البحث...";
 
-            try {
-                const response = await fetch(`${scriptURL}?action=checkStatus&code=${code}`);
-                const data = await response.json();
-
-                if (data.status === "found") {
-                    studentData = data;
-                    studentData.code = code;
-
-                    // إخفاء البحث وإظهار النتيجة
-                    document.getElementById('searchUI').style.display = "none";
-                    document.getElementById('titleText').innerText = "بيانات الطالب";
-                    document.getElementById('resultSection').style.display = "block";
-
-                    document.getElementById('displayName').innerText = "مرحباً: " + data.name;
-                    document.getElementById('displayStatus').innerText = data.res1;
-                } else {
-                    alert("الكود ده مش متسجل عندنا، راجعه تاني");
-                    btn.innerText = "استعلام الآن";
-                }
-            } catch (e) {
-                alert("فيه مشكلة في الاتصال بالسيرفر");
+            fetch(`${scriptURL}?action=checkStatus&code=${code}`)
+            .then(r => r.json()).then(data => {
                 btn.innerText = "استعلام الآن";
-            }
+                if(data.status === "found") {
+                    student = data; student.code = code;
+                    document.getElementById('searchBox').style.display = "none";
+                    document.getElementById('headerTitle').innerText = "بيانات الطالب";
+                    document.getElementById('resultView').style.display = "block";
+                    document.getElementById('sName').innerText = "مرحباً: " + data.name;
+                    document.getElementById('r1').innerText = data.res1;
+                    document.getElementById('r2').innerText = data.res2;
+                } else { alert("الكود غير صحيح"); }
+            }).catch(() => {
+                btn.innerText = "استعلام الآن";
+                alert("خطأ في الاتصال بالسيرفر");
+            });
         }
 
-        function downloadMyCard() {
-            // تجهيز الكارت المخفي
-            document.getElementById('cardText').innerHTML = `
-                <b>الاسم:</b> ${studentData.name}<br>
-                <b>السن:</b> ${studentData.age} سنة<br>
-                <b>المستوى:</b> ${studentData.level}<br>
-                <b>الكود:</b> ${studentData.code}<br>
-                <b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}
+        function downloadCard() {
+            document.getElementById('cardDetails').innerHTML = `
+                الاسم: ${student.name}<br>
+                السن: ${student.age}<br>
+                المستوى: ${student.level}<br>
+                الكود: ${student.code}
             `;
-
-            // توليد الـ QR
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: studentData.code, width: 100, height: 100 });
-
-            // تصوير الكارت
+            document.getElementById('cardQR').innerHTML = "";
+            new QRCode(document.getElementById("cardQR"), { text: student.code, width: 90, height: 90 });
+            
             setTimeout(() => {
-                html2canvas(document.querySelector("#hiddenCard"), { scale: 2 }).then(canvas => {
+                html2canvas(document.querySelector("#idCard"), {scale: 2}).then(canvas => {
                     let a = document.createElement('a');
-                    a.download = `كارت-${studentData.name}.png`;
+                    a.download = `كارت-${student.name}.png`;
                     a.href = canvas.toDataURL();
                     a.click();
                 });
-            }, 500);
+            }, 600);
         }
     </script>
 </body>
