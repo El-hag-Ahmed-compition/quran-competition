@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة المتسابق - مسجد الملهود</title>
+    <title>بوابة النتائج والكارنيه</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -16,44 +16,47 @@
         input { width: 90%; padding: 12px; border-radius: 10px; border: none; margin: 10px 0; text-align: center; font-size: 1.1rem; }
         .btn { background: #fdb931; color: #06301d; padding: 12px; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
         
+        /* ده الجزء اللي بيعرض النتيجة زي ما هي في صورتك */
         #resultArea { display: none; margin-top: 20px; background: #fff; color: #06301d; padding: 20px; border-radius: 15px; }
+        .res-box { background: #fdb931; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; }
 
-        /* الكارت المخفي للتحميل */
+        /* الكارت المخفي للتحميل فقط */
         #final-card {
             width: 380px; background: #fff; border: 6px solid #06301d; border-radius: 15px;
-            position: absolute; left: -9999px; font-family: 'Cairo', sans-serif; color: #06301d; overflow: hidden;
+            position: absolute; left: -9999px; font-family: 'Cairo', sans-serif; color: #06301d;
         }
-        .card-header { background: #06301d; color: #fdb931; padding: 12px; font-weight: bold; font-size: 1.2rem; text-align: center; border-bottom: 4px solid #fdb931; }
+        .card-header { background: #06301d; color: #fdb931; padding: 12px; font-weight: bold; text-align: center; border-bottom: 4px solid #fdb931; }
         .card-body { padding: 15px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
-        .card-info p { margin: 6px 0; border-bottom: 1px solid #eee; padding-bottom: 3px; font-size: 0.95rem; }
         #qr-box { border: 2px solid #06301d; padding: 5px; background: #fff; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2 style="color: #fdb931;">استعلام عن متسابق</h2>
-        <input type="text" id="sCode" placeholder="أدخل الكود (M-xxxx)">
-        <button class="btn" onclick="check()">بحث</button>
+        <h2 style="color: #fdb931;">استعلام النتائج</h2>
+        <input type="text" id="sCode" placeholder="أدخل الكود (مثلاً M-1551)">
+        <button class="btn" onclick="check()">استعلام الآن</button>
 
         <div id="resultArea">
             <h3 id="resName"></h3>
-            <p>الحالة: <b id="resStatus"></b></p>
-            <button class="btn" style="background:#06301d; color:#fdb931;" onclick="downloadCard()">⬇️ تحميل كارت الطالب</button>
+            <p>نتيجة المرحلة الأولى (التصفية):</p>
+            <div id="resStatus" class="res-box"></div>
+            
+            <button class="btn" style="background:#06301d; color:#fdb931; margin-top: 20px;" onclick="downloadCard()">⬇️ تحميل كارت الطالب</button>
         </div>
     </div>
 
     <div id="final-card">
         <div class="card-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
         <div class="card-body">
-            <div class="card-info" id="cardData"></div>
+            <div id="cardData"></div>
             <div id="qr-box"></div>
         </div>
         <div style="background:#fdb931; color:#06301d; font-size:11px; padding:5px; font-weight:bold; text-align:center;">يرجى إبراز الكارت عند دخول الاختبار</div>
     </div>
 
     <script>
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbxyPw5rRx4BzGSA1Zv5LGY71owlF52xdwSThLZd1Co_vZRyLNPM_qvmXOg20kcpbfEj/exec"; // حط هنا رابط الـ Web App
+        const webAppUrl = "رابط_السكربت_الخاص_بك"; 
         let student = {};
 
         function check() {
@@ -84,7 +87,7 @@
             document.getElementById('qr-box').innerHTML = "";
             new QRCode(document.getElementById("qr-box"), { text: student.code, width: 90, height: 90 });
 
-            // تحويل الكارت لصورة
+            // تحويل الكارت لصورة وتحميلها
             setTimeout(() => {
                 html2canvas(document.querySelector("#final-card"), { scale: 2 }).then(canvas => {
                     let a = document.createElement('a');
