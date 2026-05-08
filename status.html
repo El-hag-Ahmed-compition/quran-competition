@@ -37,7 +37,7 @@
     </div>
 
     <script>
-        const scriptURL = 'ضع_رابط_الويب_هنا';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzOEL_1C8pVhjXlyC_GlMrM66DMhciNs8SJgVnqBuPSfHnYCH98dTovsJsZxjUsslxj/exec';
         let st = {};
         function search() {
             fetch(`${scriptURL}?action=checkStatus&code=${document.getElementById('cIn').value}`).then(r=>r.json()).then(d=>{
