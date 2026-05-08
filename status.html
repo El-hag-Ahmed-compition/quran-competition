@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة النتائج والكارنيه</title>
+    <title>بوابة النتائج</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -13,12 +13,12 @@
             color: #fff; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px;
         }
         .container { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; border: 1px solid #fdb931; width: 100%; max-width: 400px; text-align: center; }
-        input { width: 90%; padding: 12px; border-radius: 10px; border: none; margin: 10px 0; text-align: center; font-size: 1.1rem; }
+        input { width: 90%; padding: 12px; border-radius: 10px; border: none; margin: 10px 0; text-align: center; font-size: 1.1rem; color: #333; }
         .btn { background: #fdb931; color: #06301d; padding: 12px; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
         
-        /* ده الجزء اللي بيعرض النتيجة زي ما هي في صورتك */
-        #resultArea { display: none; margin-top: 20px; background: #fff; color: #06301d; padding: 20px; border-radius: 15px; }
-        .res-box { background: #fdb931; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+        /* صندوق النتيجة زي ما كان في صورتك بالظبط */
+        #resultArea { display: none; margin-top: 20px; background: #fff; color: #06301d; padding: 20px; border-radius: 15px; border: 2px solid #fdb931; }
+        .res-box { background: #fdb931; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; color: #06301d; }
 
         /* الكارت المخفي للتحميل فقط */
         #final-card {
@@ -34,68 +34,81 @@
 
     <div class="container">
         <h2 style="color: #fdb931;">استعلام النتائج</h2>
-        <input type="text" id="sCode" placeholder="أدخل الكود (مثلاً M-1551)">
+        <input type="text" id="sCode" placeholder="أدخل كود الطالب (M-xxxx)">
         <button class="btn" onclick="check()">استعلام الآن</button>
 
         <div id="resultArea">
-            <h3 id="resName"></h3>
-            <p>نتيجة المرحلة الأولى (التصفية):</p>
+            <h3 id="resName" style="margin-bottom: 15px;"></h3>
+            <p style="font-size: 1.1rem;">نتيجة المرحلة الأولى (التصفية):</p>
             <div id="resStatus" class="res-box"></div>
             
-            <button class="btn" style="background:#06301d; color:#fdb931; margin-top: 20px;" onclick="downloadCard()">⬇️ تحميل كارت الطالب</button>
+            <button class="btn" style="background:#06301d; color:#fdb931; margin-top: 25px;" onclick="downloadCard()">⬇️ تحميل كارت الطالب</button>
         </div>
     </div>
 
     <div id="final-card">
         <div class="card-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
         <div class="card-body">
-            <div id="cardData"></div>
+            <div id="cardData" style="line-height: 1.6;"></div>
             <div id="qr-box"></div>
         </div>
         <div style="background:#fdb931; color:#06301d; font-size:11px; padding:5px; font-weight:bold; text-align:center;">يرجى إبراز الكارت عند دخول الاختبار</div>
     </div>
 
     <script>
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbxyPw5rRx4BzGSA1Zv5LGY71owlF52xdwSThLZd1Co_vZRyLNPM_qvmXOg20kcpbfEj/exec"; 
+        // ضع رابط السكربت هنا
+        const webAppUrl = "رابط_السكربت_الخاص_بك"; 
         let student = {};
 
         function check() {
             const code = document.getElementById('sCode').value.trim();
             if(!code) return alert("ادخل الكود أولاً");
 
+            // نغير النص عشان الطالب يعرف إن الموقع شغال
+            const btn = document.querySelector('.btn');
+            btn.innerText = "جاري البحث...";
+
             fetch(`${webAppUrl}?action=checkStatus&code=${code}`)
-            .then(r => r.json()).then(data => {
+            .then(r => r.json())
+            .then(data => {
+                btn.innerText = "استعلام الآن";
                 if(data.status === "found") {
-                    student = data; student.code = code;
+                    student = data; 
+                    student.code = code;
                     document.getElementById('resultArea').style.display = "block";
                     document.getElementById('resName').innerText = "مرحباً: " + data.name;
                     document.getElementById('resStatus').innerText = data.res1;
-                } else { alert("الكود غير صحيح"); }
+                } else { 
+                    alert("الكود غير صحيح أو الطالب غير مسجل"); 
+                }
+            })
+            .catch(err => {
+                btn.innerText = "استعلام الآن";
+                alert("تأكد من رابط السكريبت الخاص بك");
             });
         }
 
         function downloadCard() {
-            // ملء بيانات الكارت
-            document.getElementById('cardData').innerHTML = `
-                <p><b>الاسم:</b> ${student.name}</p>
-                <p><b>السن:</b> ${student.age} سنة</p>
-                <p><b>المستوى:</b> ${student.level}</p>
-                <p><b>الكود:</b> ${student.code}</p>
-                <p><b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</p>
+            const dataArea = document.getElementById('cardData');
+            dataArea.innerHTML = `
+                <p style="margin:5px 0;"><b>الاسم:</b> ${student.name}</p>
+                <p style="margin:5px 0;"><b>السن:</b> ${student.age} سنة</p>
+                <p style="margin:5px 0;"><b>المستوى:</b> ${student.level}</p>
+                <p style="margin:5px 0;"><b>الكود:</b> ${student.code}</p>
+                <p style="margin:5px 0;"><b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</p>
             `;
-            // توليد الـ QR
+
             document.getElementById('qr-box').innerHTML = "";
             new QRCode(document.getElementById("qr-box"), { text: student.code, width: 90, height: 90 });
 
-            // تحويل الكارت لصورة وتحميلها
             setTimeout(() => {
                 html2canvas(document.querySelector("#final-card"), { scale: 2 }).then(canvas => {
                     let a = document.createElement('a');
                     a.download = `كارت-${student.name}.png`;
-                    a.href = canvas.toDataURL();
+                    a.href = canvas.toDataURL("image/png");
                     a.click();
                 });
-            }, 600);
+            }, 700);
         }
     </script>
 </body>
