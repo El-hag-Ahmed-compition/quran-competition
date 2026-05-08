@@ -2,42 +2,45 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل المتسابق</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل المسابقة | مسجد الملهود</title>
     <style>
-        body { background: #06301d; color: #fff; font-family: 'Cairo', sans-serif; text-align: center; padding: 20px; }
-        .box { border: 2px solid #fdb931; padding: 20px; border-radius: 15px; max-width: 400px; margin: auto; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; }
-        .btn-send { background: #fdb931; color: #06301d; width: 100%; padding: 15px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        body { background: #06301d; color: #fff; font-family: 'Cairo', sans-serif; padding: 20px; display: flex; justify-content: center; }
+        .card { background: rgba(255,255,255,0.05); border: 2px solid #fdb931; border-radius: 20px; padding: 30px; width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #fdb931; text-align: center; border-bottom: 1px solid #fdb931; padding-bottom: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #fdb931; box-sizing: border-box; font-family: 'Cairo'; }
+        .btn { background: linear-gradient(#fdb931, #b8860b); color: #06301d; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2 style="color:#fdb931">تسجيل المتسابق</h2>
+    <div class="card">
+        <h2>تسجيل المتسابق</h2>
         <form id="regForm">
             <input type="text" name="name" placeholder="الاسم رباعي" required>
-            <input type="date" name="birthDate" required>
+            <input type="date" name="birthDate" required title="تاريخ الميلاد">
             <select name="level" required>
                 <option value="" disabled selected>اختر المستوى</option>
-                <option value="المستوى الأول (قرآن كامل)">المستوى الأول (قرآن كامل)</option>
-                <option value="المستوى الثاني (نصف القرآن)">المستوى الثاني (نصف القرآن)</option>
-                <option value="المستوى الثالث (10 أجزاء)">المستوى الثالث (10 أجزاء)</option>
+                <option value="المستوى 1">المستوى الأول (قرآن كامل)</option>
+                <option value="المستوى 2">المستوى الثاني</option>
+                <option value="المستوى 3">المستوى الثالث</option>
+                <option value="المستوى 4">المستوى الرابع</option>
+                <option value="المستوى 5">المستوى الخامس</option>
             </select>
             <input type="tel" name="phone" placeholder="رقم الهاتف" required>
-            <button type="submit" class="btn-send" id="subBtn">إرسال البيانات</button>
+            <button type="submit" class="btn" id="subBtn">إرسال البيانات</button>
         </form>
-        <div id="msg" style="margin-top:20px;"></div>
+        <div id="msg" style="text-align:center; margin-top:15px; color:#fdb931; font-weight:bold;"></div>
     </div>
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwrWJ4zG7yGh0cXQIaTfW_8cqnxTUKPEFQIyFTmc_M9TPfYHQIZ0gTuzSX04rfMA30s/exec';
+        const scriptURL = 'ضع_رابط_الويب_هنا';
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
             document.getElementById('subBtn').innerText = "جاري الحفظ...";
             fetch(scriptURL, { method: 'POST', body: new FormData(this) })
             .then(r => r.json()).then(res => {
-                if(res.result === "success") {
-                    document.getElementById('msg').innerHTML = `<p style="color:#fdb931">تم التسجيل! كودك: ${res.code}</p>`;
-                    this.reset();
-                }
+                document.getElementById('msg').innerHTML = `تم التسجيل بنجاح!<br>كودك هو: <span style="font-size:1.8rem;">${res.code}</span>`;
+                this.reset();
             }).finally(() => document.getElementById('subBtn').innerText = "إرسال البيانات");
         };
     </script>
