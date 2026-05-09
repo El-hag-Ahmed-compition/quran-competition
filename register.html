@@ -45,12 +45,7 @@
             box-sizing: border-box;
         }
 
-        .age-info {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #fdb931;
-            font-weight: bold;
-        }
+        .age-info { margin-top: 8px; font-size: 0.9rem; color: #fdb931; font-weight: bold; }
 
         .btn-submit {
             width: 100%;
@@ -66,14 +61,27 @@
             transition: 0.3s;
         }
 
-        .btn-submit:disabled { background: #666; cursor: not-allowed; }
+        #successBox {
+            display: none;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #fdb931;
+        }
 
-        #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
+        .code-display {
+            font-size: 2.5rem;
+            color: #fdb931;
+            margin: 15px 0;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <h2 style="color: #fdb931; text-align:center;">استمارة التسجيل<br>مسجد الحاج أحمد الملهود</h2>
+    <h2 style="color: #fdb931; text-align:center;">تسجيل المتسابقين</h2>
 
     <div class="form-card">
         <form id="registrationForm">
@@ -85,18 +93,13 @@
             <div class="form-group">
                 <label>تاريخ الميلاد:</label>
                 <input type="date" id="birthDate" name="birthDate" required>
-                <div id="ageDisplay" class="age-info">يرجى تحديد تاريخ الميلاد</div>
+                <div id="ageDisplay" class="age-info"></div>
             </div>
 
             <div class="form-group">
-                <label>المستوى المتاح لسنك:</label>
-                <select id="levelSelect" name="level" required>
-                    <option value="">اختر تاريخ الميلاد أولاً</option>
-                    <option value="المستوى الأول">المستوى الأول (القرآن كاملاً) - حتى 20 سنة</option>
-                    <option value="المستوى الثاني">المستوى الثاني (نصف القرآن) - حتى 15 سنة</option>
-                    <option value="المستوى الثالث">المستوى الثالث (ثلث القرآن) - حتى 13 سنة</option>
-                    <option value="المستوى الرابع">المستوى الرابع (ربع القرآن) - حتى 11 سنة</option>
-                    <option value="المستوى الخامس">المستوى الخامس (5 أجزاء) - حتى 10 سنوات</option>
+                <label>المستويات المتاحة لك:</label>
+                <select id="levelSelect" name="level" required disabled>
+                    <option value="">أدخل تاريخ الميلاد أولاً</option>
                 </select>
             </div>
 
@@ -106,64 +109,82 @@
             </div>
 
             <button type="submit" id="submitBtn" class="btn-submit">تأكيد التسجيل</button>
-            <div id="statusMsg"></div>
+            <p id="statusMsg" style="text-align:center; margin-top:10px;"></p>
         </form>
+
+        <div id="successBox">
+            <h3 style="color: #fdb931;">تم التسجيل بنجاح! ✅</h3>
+            <p>احتفظ بكود المتسابق الخاص بك:</p>
+            <div id="finalCode" class="code-display"></div>
+            <p style="font-size: 0.8rem;">برجاء تصوير الشاشة لإظهار الكود للمشرف</p>
+            <button class="btn-submit" onclick="location.reload()">تسجيل متسابق جديد</button>
+        </div>
     </div>
 
     <script>
         const birthDateInput = document.getElementById('birthDate');
         const levelSelect = document.getElementById('levelSelect');
         const ageDisplay = document.getElementById('ageDisplay');
-        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('registrationForm');
+        const successBox = document.getElementById('successBox');
+
+        // مصفوفة المستويات حسب الحد الأقصى للسن
+        const levels = [
+            { id: "المستوى الخامس", text: "المستوى الخامس (5 أجزاء) - حتى 10 سنوات", max: 10 },
+            { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
+            { id: "المستوى الثالث", text: "المستوى الثالث (ثلث القرآن) - حتى 13 سنة", max: 13 },
+            { id: "المستوى الثاني", text: "المستوى الثاني (نصف القرآن) - حتى 15 سنة", max: 15 },
+            { id: "المستوى الأول", text: "المستوى الأول (القرآن كاملاً) - حتى 20 سنة", max: 20 }
+        ];
 
         birthDateInput.addEventListener('change', function() {
             const birthDate = new Date(this.value);
             const today = new Date();
-            
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
 
-            if (age < 0) return;
-            ageDisplay.innerText = `عمر المتسابق الآن: ${age} سنة`;
+            ageDisplay.innerText = age >= 0 ? `السن الحالي: ${age} سنة` : "";
+            
+            // فلترة القائمة
+            levelSelect.innerHTML = '<option value="">اختر المستوى...</option>';
+            const filtered = levels.filter(l => age <= l.max);
 
-            // منطق تحديد المستوى بناءً على الحد الأقصى للسن
-            if (age <= 10) {
-                levelSelect.value = "المستوى الخامس";
-            } else if (age <= 11) {
-                levelSelect.value = "المستوى الرابع";
-            } else if (age <= 13) {
-                levelSelect.value = "المستوى الثالث";
-            } else if (age <= 15) {
-                levelSelect.value = "المستوى الثاني";
-            } else if (age <= 20) {
-                levelSelect.value = "المستوى الأول";
+            if (filtered.length > 0) {
+                levelSelect.disabled = false;
+                filtered.forEach(l => {
+                    const opt = document.createElement('option');
+                    opt.value = l.id;
+                    opt.text = l.text;
+                    levelSelect.appendChild(opt);
+                });
             } else {
-                levelSelect.value = "";
-                ageDisplay.innerText = `العمر ${age} سنة (تجاوز الحد الأقصى للمسابقة)`;
-                alert("نعتذر، السن المسموح به للمسابقة حتى 20 عاماً فقط.");
+                levelSelect.disabled = true;
+                levelSelect.innerHTML = '<option value="">السن غير مسموح به</option>';
             }
         });
 
-        // كود الإرسال للجوجل شيت (نفس الكود السابق)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec'; 
-        const form = document.getElementById('registrationForm');
+        const scriptURL = 'رابط_الويب_أب_بتاعك';
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            submitBtn.disabled = true;
-            document.getElementById('statusMsg').innerText = "جاري الحفظ...";
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('statusMsg').innerText = "جاري حفظ البيانات...";
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-            .then(response => {
-                document.getElementById('statusMsg').innerText = "تم التسجيل بنجاح!";
-                // يمكنك إضافة تحويل للواتساب هنا كما فعلنا سابقاً
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success' || data.code) {
+                    form.style.display = 'none';
+                    successBox.style.display = 'block';
+                    document.getElementById('finalCode').innerText = data.code;
+                } else {
+                    throw new Error();
+                }
             })
             .catch(error => {
-                submitBtn.disabled = false;
-                document.getElementById('statusMsg').innerText = "خطأ في الاتصال!";
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('statusMsg').innerText = "خطأ! تأكد من اتصال الإنترنت.";
             });
         });
     </script>
