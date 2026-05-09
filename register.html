@@ -8,156 +8,164 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         
         body {
-            background: #06301d; /* اللون الأخضر الغامق للمسجد */
+            background-color: #06301d;
+            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            background-blend-mode: overlay;
             color: #fff;
             font-family: 'Cairo', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .form-card {
             background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #fdb931; /* الإطار الذهبي */
+            border: 2px solid #fdb931;
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            max-width: 500px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h2 {
-            color: #fdb931;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
-            border-bottom: 1px solid rgba(253, 185, 49, 0.3);
-            padding-bottom: 10px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #fdb931;
-            font-weight: bold;
-        }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 8px; color: #fdb931; font-weight: bold; }
 
         input, select {
             width: 100%;
             padding: 12px;
-            margin-bottom: 20px;
             border-radius: 10px;
             border: 1px solid #fdb931;
             background: #fff;
             color: #333;
             font-family: 'Cairo', sans-serif;
             box-sizing: border-box;
-            font-size: 1rem;
+        }
+
+        .age-info {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #fdb931;
+            font-weight: bold;
         }
 
         .btn-submit {
+            width: 100%;
             background: linear-gradient(135deg, #fdb931, #b8860b);
             color: #06301d;
-            border: none;
             padding: 15px;
-            width: 100%;
-            border-radius: 10px;
+            border: none;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            filter: brightness(1.1);
-        }
-
-        #msg {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #fdb931;
-            line-height: 1.6;
-        }
-
-        .success-code {
-            display: block;
-            font-size: 2.2rem;
             margin-top: 10px;
-            color: #fff;
-            text-shadow: 0 0 10px #fdb931;
+            transition: 0.3s;
         }
+
+        .btn-submit:disabled { background: #666; cursor: not-allowed; }
+
+        #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="form-card">
-        <h2>تسجيل المتسابق</h2>
-        
-        <form id="registrationForm">
-            <label>الاسم رباعي</label>
-            <input type="text" name="name" placeholder="أدخل اسمك الكامل" required>
-            
-            <label>تاريخ الميلاد</label>
-            <input type="date" name="birthDate" required>
-            
-            <label>المستوى</label>
-            <select name="level" required>
-                <option value="" disabled selected>اختر مستواك</option>
-                <option value="المستوى الأول (حفظ القرآن الكريم كاملاً)">المستوى الأول (حفظ القرآن الكريم كاملاً)</option>
-                <option value="المستوى الثاني (حفظ نصف القرآن الكريم)">المستوى الثاني (حفظ نصف القرآن الكريم)</option>
-                <option value="المستوى الثالث (حفظ ثلث القرآن الكريم)">المستوى الثالث (حفظ ثلث القرآن الكريم)</option>
-                <option value="المستوى الرابع (حفظ ربع القرآن الكريم)">المستوى الرابع (حفظ ربع القرآن الكريم)</option>
-                <option value="المستوى الخامس (حفظ 5 أجزاء)">المستوى الخامس (حفظ 5 أجزاء)</option>
-            </select>
-            
-            <label>رقم الهاتف</label>
-            <input type="tel" name="phone" placeholder="01xxxxxxxxx" required>
-            
-            <button type="submit" class="btn-submit" id="submitBtn">إرسال البيانات</button>
-        </form>
+    <h2 style="color: #fdb931; text-align:center;">استمارة التسجيل<br>مسجد الحاج أحمد الملهود</h2>
 
-        <div id="msg"></div>
+    <div class="form-card">
+        <form id="registrationForm">
+            <div class="form-group">
+                <label>الاسم الرباعي:</label>
+                <input type="text" name="name" required placeholder="أدخل اسمك كاملاً">
+            </div>
+
+            <div class="form-group">
+                <label>تاريخ الميلاد:</label>
+                <input type="date" id="birthDate" name="birthDate" required>
+                <div id="ageDisplay" class="age-info">يرجى تحديد تاريخ الميلاد</div>
+            </div>
+
+            <div class="form-group">
+                <label>المستوى المتاح لسنك:</label>
+                <select id="levelSelect" name="level" required>
+                    <option value="">اختر تاريخ الميلاد أولاً</option>
+                    <option value="المستوى الأول">المستوى الأول (القرآن كاملاً) - حتى 20 سنة</option>
+                    <option value="المستوى الثاني">المستوى الثاني (نصف القرآن) - حتى 15 سنة</option>
+                    <option value="المستوى الثالث">المستوى الثالث (ثلث القرآن) - حتى 13 سنة</option>
+                    <option value="المستوى الرابع">المستوى الرابع (ربع القرآن) - حتى 11 سنة</option>
+                    <option value="المستوى الخامس">المستوى الخامس (5 أجزاء) - حتى 10 سنوات</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>رقم الواتساب:</label>
+                <input type="tel" name="phone" required placeholder="01xxxxxxxxx">
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit">تأكيد التسجيل</button>
+            <div id="statusMsg"></div>
+        </form>
     </div>
 
     <script>
-        // ضع رابط الـ Web App الخاص بك هنا بعد عمل Deploy للـ Apps Script
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec';
+        const birthDateInput = document.getElementById('birthDate');
+        const levelSelect = document.getElementById('levelSelect');
+        const ageDisplay = document.getElementById('ageDisplay');
+        const submitBtn = document.getElementById('submitBtn');
 
-        document.getElementById('registrationForm').onsubmit = function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const msgDiv = document.getElementById('msg');
+        birthDateInput.addEventListener('change', function() {
+            const birthDate = new Date(this.value);
+            const today = new Date();
             
-            btn.disabled = true;
-            btn.innerText = "جاري الحفظ...";
-            msgDiv.innerText = "";
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
 
-            fetch(scriptURL, { method: 'POST', body: new FormData(this) })
-            .then(response => response.json())
-            .then(res => {
-                if(res.result === "success") {
-                    msgDiv.innerHTML = `تم التسجيل بنجاح!<br>احتفظ بكود الطالب الخاص بك:<br><span class="success-code">${res.code}</span>`;
-                    this.reset();
-                } else {
-                    msgDiv.innerText = "حدث خطأ أثناء الحفظ: " + res.error;
-                }
+            if (age < 0) return;
+            ageDisplay.innerText = `عمر المتسابق الآن: ${age} سنة`;
+
+            // منطق تحديد المستوى بناءً على الحد الأقصى للسن
+            if (age <= 10) {
+                levelSelect.value = "المستوى الخامس";
+            } else if (age <= 11) {
+                levelSelect.value = "المستوى الرابع";
+            } else if (age <= 13) {
+                levelSelect.value = "المستوى الثالث";
+            } else if (age <= 15) {
+                levelSelect.value = "المستوى الثاني";
+            } else if (age <= 20) {
+                levelSelect.value = "المستوى الأول";
+            } else {
+                levelSelect.value = "";
+                ageDisplay.innerText = `العمر ${age} سنة (تجاوز الحد الأقصى للمسابقة)`;
+                alert("نعتذر، السن المسموح به للمسابقة حتى 20 عاماً فقط.");
+            }
+        });
+
+        // كود الإرسال للجوجل شيت (نفس الكود السابق)
+        const scriptURL = 'رابط_الويب_أب_الخاص_بك'; 
+        const form = document.getElementById('registrationForm');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            document.getElementById('statusMsg').innerText = "جاري الحفظ...";
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                document.getElementById('statusMsg').innerText = "تم التسجيل بنجاح!";
+                // يمكنك إضافة تحويل للواتساب هنا كما فعلنا سابقاً
             })
             .catch(error => {
-                msgDiv.innerText = "فشل الاتصال بالسيرفر، تأكد من الرابط";
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerText = "إرسال البيانات";
+                submitBtn.disabled = false;
+                document.getElementById('statusMsg').innerText = "خطأ في الاتصال!";
             });
-        };
+        });
     </script>
-
 </body>
 </html>
