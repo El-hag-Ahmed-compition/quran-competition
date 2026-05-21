@@ -4,119 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل المتسابقين | مسجد الملهود</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;900&display=swap');
         
-        body {
-            background-color: #06301d;
-            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            background-blend-mode: overlay;
-            color: #fff;
-            font-family: 'Cairo', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        :root {
+            --gold: #fdb931;
+            --dark-green: #06301d;
+            --light-green: #0a4d2e;
+            --glass: rgba(255, 255, 255, 0.08);
         }
 
+        * { box-sizing: border-box; }
+        
+        body { 
+            background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
+            background-attachment: fixed;
+            color: #fff; 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 15px;
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+
+        /* --- أنيميشن الخلفية --- */
+        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
+        @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+        .orb { position: absolute; background: radial-gradient(circle, rgba(253, 185, 49, 0.1) 0%, transparent 70%); border-radius: 50%; filter: blur(40px); animation: moveOrb 20s infinite alternate ease-in-out; }
+        .orb-1 { width: 300px; height: 300px; top: -50px; left: -50px; }
+        @keyframes moveOrb { from { transform: translate(0, 0); } to { transform: translate(30px, 60px); } }
+
+        /* --- حاوية التسجيل (Form Card) --- */
         .form-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #fdb931;
-            border-radius: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(253, 185, 49, 0.25);
+            border-radius: 25px;
             padding: 25px;
             width: 100%;
             max-width: 500px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            margin-top: 10px;
         }
 
-        .form-group { margin-bottom: 15px; text-align: right; }
-        label { display: block; margin-bottom: 8px; color: #fdb931; font-weight: bold; }
+        h2 { color: var(--gold); text-align: center; font-weight: 900; margin-bottom: 20px; font-size: 1.6rem; }
+
+        .form-group { margin-bottom: 18px; text-align: right; }
+        label { display: block; margin-bottom: 8px; color: var(--gold); font-weight: 600; font-size: 0.95rem; }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #fdb931;
-            background: #fff;
-            color: #333;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(253, 185, 49, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
             font-family: 'Cairo', sans-serif;
-            box-sizing: border-box;
+            font-weight: 600;
+            transition: 0.3s;
         }
+        input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 10px rgba(253, 185, 49, 0.3); }
 
-        .age-info { margin-top: 8px; font-size: 0.9rem; color: #fdb931; font-weight: bold; }
+        .age-info { margin-top: 8px; font-size: 0.9rem; color: var(--gold); font-weight: 900; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px; display: inline-block; }
 
         .btn-submit {
             width: 100%;
-            background: linear-gradient(135deg, #fdb931, #b8860b);
-            color: #06301d;
-            padding: 15px;
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: var(--dark-green);
+            padding: 16px;
             border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
+            border-radius: 15px;
+            font-weight: 900;
+            font-size: 1.2rem;
             cursor: pointer;
             margin-top: 10px;
             transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(253, 185, 49, 0.3);
         }
+        .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; }
 
+        /* --- صندوق النجاح --- */
         #successBox {
             display: none;
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px dashed #fdb931;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px 20px;
+            border-radius: 20px;
+            border: 2px dashed var(--gold);
         }
 
         .code-display {
-            font-size: 2.5rem;
-            color: #fdb931;
-            margin: 15px 0;
-            letter-spacing: 5px;
-            font-weight: bold;
+            font-size: 2.8rem;
+            color: var(--gold);
+            margin: 20px 0;
+            letter-spacing: 4px;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(253, 185, 49, 0.4);
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-    <h2 style="color: #fdb931; text-align:center;">تسجيل المتسابقين</h2>
+    <div class="bg-layer">
+        <div class="bg-pattern"></div>
+        <div class="orb orb-1"></div>
+    </div>
 
     <div class="form-card">
+        <h2><i class="fas fa-user-edit"></i> تسجيل المتسابقين</h2>
+        
         <form id="registrationForm">
             <div class="form-group">
-                <label>الاسم الرباعي:</label>
-                <input type="text" name="name" required placeholder="أدخل اسمك كاملاً">
+                <label><i class="fas fa-id-card"></i> الاسم الرباعي:</label>
+                <input type="text" name="name" required placeholder="أدخل اسمك كما في شهادة الميلاد">
             </div>
 
             <div class="form-group">
-                <label>تاريخ الميلاد:</label>
+                <label><i class="fas fa-venus-mars"></i> النوع:</label>
+                <select name="gender" required>
+                    <option value="">اختر النوع</option>
+                    <option value="ذكر">ذكر</option>
+                    <option value="أنثى">أنثى</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-calendar-alt"></i> تاريخ الميلاد:</label>
                 <input type="date" id="birthDate" name="birthDate" required>
-                <div id="ageDisplay" class="age-info"></div>
+                <div id="ageDisplay" class="age-info" style="display:none;"></div>
             </div>
 
             <div class="form-group">
-                <label>المستويات المتاحة لك:</label>
+                <label><i class="fas fa-trophy"></i> المستوى المرشح لك:</label>
                 <select id="levelSelect" name="level" required disabled>
                     <option value="">أدخل تاريخ الميلاد أولاً</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>رقم الواتساب:</label>
+                <label><i class="fab fa-whatsapp"></i> رقم الواتساب:</label>
                 <input type="tel" name="phone" required placeholder="01xxxxxxxxx">
             </div>
 
             <button type="submit" id="submitBtn" class="btn-submit">تأكيد التسجيل</button>
-            <p id="statusMsg" style="text-align:center; margin-top:10px;"></p>
+            <p id="statusMsg" style="text-align:center; margin-top:15px; font-weight:600;"></p>
+            
+            <center><a href="index.html" class="back-home"><i class="fas fa-home"></i> العودة للرئيسية</a></center>
         </form>
 
         <div id="successBox">
-            <h3 style="color: #fdb931;">تم التسجيل بنجاح! ✅</h3>
-            <p>احتفظ بكود المتسابق الخاص بك:</p>
+            <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--gold);"></i>
+            <h3 style="color: var(--gold); margin-top:15px;">تم التسجيل بنجاح!</h3>
+            <p>كود المتسابق الخاص بك هو:</p>
             <div id="finalCode" class="code-display"></div>
-            <p style="font-size: 0.8rem;">برجاء تصوير الشاشة لإظهار الكود للمشرف</p>
+            <p style="font-size: 0.9rem; color: #ddd;">⚠️ برجاء تصوير الشاشة (Screenshot) وحفظ الكود لإظهاره للمشرف يوم الاختبار.</p>
             <button class="btn-submit" onclick="location.reload()">تسجيل متسابق جديد</button>
         </div>
     </div>
@@ -128,7 +184,6 @@
         const form = document.getElementById('registrationForm');
         const successBox = document.getElementById('successBox');
 
-        // مصفوفة المستويات حسب الحد الأقصى للسن
         const levels = [
             { id: "المستوى الخامس", text: "المستوى الخامس (5 أجزاء) - حتى 10 سنوات", max: 10 },
             { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
@@ -144,9 +199,11 @@
             const m = today.getMonth() - birthDate.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
 
-            ageDisplay.innerText = age >= 0 ? `السن الحالي: ${age} سنة` : "";
+            if (age >= 0) {
+                ageDisplay.style.display = "inline-block";
+                ageDisplay.innerText = `السن الحالي: ${age} سنة`;
+            }
             
-            // فلترة القائمة
             levelSelect.innerHTML = '<option value="">اختر المستوى...</option>';
             const filtered = levels.filter(l => age <= l.max);
 
@@ -164,27 +221,33 @@
             }
         });
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec';
+        // رابط الـ Web App الخاص بك
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec';
 
         form.addEventListener('submit', e => {
             e.preventDefault();
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('statusMsg').innerText = "جاري حفظ البيانات...";
+            document.getElementById('statusMsg').innerText = "⏳ برجاء الانتظار جاري التسجيل...";
+            document.getElementById('statusMsg').style.color = "var(--gold)";
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => response.json())
             .then(data => {
-                if (data.result === 'success' || data.code) {
+                if (data.result === 'success') {
                     form.style.display = 'none';
                     successBox.style.display = 'block';
                     document.getElementById('finalCode').innerText = data.code;
                 } else {
-                    throw new Error();
+                    alert(data.message);
+                    document.getElementById('submitBtn').disabled = false;
+                    document.getElementById('statusMsg').innerText = data.message;
+                    document.getElementById('statusMsg').style.color = "#ff4d4d";
                 }
             })
             .catch(error => {
                 document.getElementById('submitBtn').disabled = false;
-                document.getElementById('statusMsg').innerText = "خطأ! تأكد من اتصال الإنترنت.";
+                document.getElementById('statusMsg').innerText = "❌ حدث خطأ! تأكد من الإنترنت وحاول ثانية.";
+                document.getElementById('statusMsg').style.color = "#ff4d4d";
             });
         });
     </script>
