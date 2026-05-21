@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول المواعيد | مسابقة مسجد الملهود</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        
+        :root {
+            --gold: #fdb931;
+            --dark-green: #06301d;
+            --light-green: #0a4d2e;
+            --glass: rgba(255, 255, 255, 0.08);
+        }
+
+        body { 
+            background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
+            background-attachment: fixed;
+            color: #fff; 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+
+        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
+        @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+
+        .container { width: 100%; max-width: 800px; z-index: 1; }
+        h1 { color: var(--gold); text-align: center; font-weight: 900; margin-bottom: 30px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .schedule-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(253, 185, 49, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .phase-badge {
+            background: var(--gold);
+            color: var(--dark-green);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 900;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: right; min-width: 500px; }
+        th { color: var(--gold); border-bottom: 2px solid var(--gold); padding: 15px 10px; font-size: 1.1rem; }
+        td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600; line-height: 1.6; }
+        
+        .date-range { 
+            color: var(--gold); 
+            font-weight: 900; 
+        }
+        
+        .reg-box {
+            border-right: 5px solid var(--gold);
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin: 30px 0;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            th, td { font-size: 0.9rem; padding: 10px 5px; }
+            h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"><div class="bg-pattern"></div></div>
+
+    <div class="container">
+        <h1><i class="fas fa-clock"></i> مواعيد المسابقة لعام 2026</h1>
+
+        <div class="schedule-card reg-box">
+            <div class="phase-badge"><i class="fas fa-user-plus"></i> فترة التسجيل</div>
+            <div>متاحة عبر الموقع: <span class="date-range">من يوم 25 في شهر 6 الي يوم 27 في شهر 6</span></div>
+        </div>
+
+        <div class="schedule-card">
+            <div class="phase-badge"><i class="fas fa-star"></i> المرحلة الأولى</div>
+            <div style="margin-bottom: 15px; color: #ccc;">البداية الفعلية للاختبارات: <span class="date-range">من يوم 1 في شهر 7</span></div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المستوى</th>
+                            <th>المحتوى</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>الأول</td><td>القرآن كاملاً</td><td class="date-range">من يوم 1 في شهر 7 الي يوم 3 في شهر 7</td></tr>
+                        <tr><td>الثاني</td><td>نصف القرآن</td><td class="date-range">من يوم 4 في شهر 7 الي يوم 6 في شهر 7</td></tr>
+                        <tr><td>الثالث</td><td>ثلث القرآن</td><td class="date-range">من يوم 7 في شهر 7 الي يوم 9 في شهر 7</td></tr>
+                        <tr><td>الرابع</td><td>ربع القرآن</td><td class="date-range">من يوم 10 في شهر 7 الي يوم 12 في شهر 7</td></tr>
+                        <tr><td>الخامس</td><td>5 أجزاء</td><td class="date-range">من يوم 13 في شهر 7 الي يوم 15 في شهر 7</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="schedule-card">
+            <div class="phase-badge" style="background: #2ecc71; color: #fff;"><i class="fas fa-trophy"></i> المرحلة الثانية</div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المستوى</th>
+                            <th>المحتوى</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>الأول</td><td>القرآن كاملاً</td><td class="date-range">من يوم 19 في شهر 7 الي يوم 21 في شهر 7</td></tr>
+                        <tr><td>الثاني</td><td>نصف القرآن</td><td class="date-range">من يوم 22 في شهر 7 الي يوم 24 في شهر 7</td></tr>
+                        <tr><td>الثالث</td><td>ثلث القرآن</td><td class="date-range">من يوم 25 في شهر 7 الي يوم 27 في شهر 7</td></tr>
+                        <tr><td>الرابع</td><td>ربع القرآن</td><td class="date-range">من يوم 28 في شهر 7 الي يوم 30 في شهر 7</td></tr>
+                        <tr><td>الخامس</td><td>5 أجزاء</td><td class="date-range">من يوم 31 في شهر 7 الي يوم 2 في شهر 8</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-home"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+    </div>
+
+</body>
+</html>
