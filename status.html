@@ -2,65 +2,384 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>استعلام المتسابقين | مسجد الملهود</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بوّابة المتسابق الرقمية | مسجد الملهود</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        body { background: #06301d; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
-        .search-area { border: 2px solid #fdb931; border-radius: 15px; padding: 25px; max-width: 400px; margin: auto; }
-        .res-info { display: none; background: #fff; color: #000; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: right; }
-        #finalCard { width: 450px; background: #fff; color: #000; border: 4px solid #06301d; position: absolute; left: -9999px; }
+        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;700;900&display=swap');
+        
+        :root {
+            --gold: #fdb931;
+            --dark-green: #06301d;
+            --light-green: #0a4d2e;
+            --glass: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
+        body { 
+            background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
+            background-attachment: fixed;
+            color: #fff; 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px 15px;
+            overflow-x: hidden;
+        }
+
+        /* --- الخلفية الحية والزخارف --- */
+        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.04"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
+        @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+
+        /* --- صندوق الاستعلام الفخم --- */
+        .search-box { 
+            width: 100%; 
+            max-width: 480px; 
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(253, 185, 49, 0.3);
+            border-radius: 30px; 
+            padding: 30px 25px; 
+            margin-top: 20px; 
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        
+        .title { 
+            color: var(--gold); 
+            font-size: 1.6rem; 
+            margin-bottom: 25px; 
+            font-weight: 900; 
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .input-row { 
+            display: flex; 
+            background: rgba(255, 255, 255, 0.98); 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 2px solid var(--gold);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        input { 
+            flex: 1; 
+            padding: 16px; 
+            border: none; 
+            text-align: center; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            background: transparent;
+            color: var(--dark-green);
+            outline: none;
+        }
+        input::placeholder { color: #999; font-weight: 400; }
+
+        .btn-search { 
+            background: var(--gold);
+            color: var(--dark-green); 
+            border: none; 
+            padding: 0 30px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            font-size: 1.15rem;
+        }
+        .btn-search:hover { background: #ffca5c; }
+        .btn-search:active { transform: scale(0.96); }
+
+        /* --- شاشة عرض البيانات الاحترافية --- */
+        #resultDisplay { 
+            display: none; 
+            background: var(--card-bg); 
+            border-radius: 28px; 
+            padding: 30px 25px; 
+            width: 100%; 
+            max-width: 480px; 
+            margin-top: 30px; 
+            box-shadow: 0 25px 55px rgba(0,0,0,0.6);
+            color: #222;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .st-name { 
+            font-size: 1.55rem; 
+            font-weight: 900; 
+            color: var(--dark-green); 
+            text-align: center;
+            margin-bottom: 25px; 
+            padding-bottom: 15px; 
+            border-bottom: 2px dashed #e0e0e0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border: 1px solid #eaeaea;
+            border-radius: 16px;
+            padding: 12px 15px;
+            text-align: center;
+        }
+        .info-label { font-size: 0.85rem; color: #777; margin-bottom: 5px; font-weight: 600; }
+        .info-value { font-size: 1.15rem; font-weight: 700; color: #333; }
+        .info-value.level-color { color: #c48c02; font-weight: 900; }
+        .info-value.code-color { color: var(--dark-green); font-weight: 900; font-family: monospace; font-size: 1.3rem; }
+
+        /* --- تعديل المراحل لتصبح أزرار تفاعلية صريحة وجميلة --- */
+        .stage-btn {
+            width: 100%;
+            background: #ffffff;
+            border: 2px solid var(--dark-green);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-align: right;
+            outline: none;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            position: relative;
+        }
+        
+        /* تأثيرات حركة الأزرار عند التفاعل والضغط */
+        .stage-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(6, 48, 29, 0.1);
+        }
+        .stage-btn:active { 
+            transform: translateY(1px); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .stage-info { text-align: right; }
+        .stage-title { font-size: 1.05rem; font-weight: 700; color: var(--dark-green); margin-bottom: 4px; }
+        .stage-status { font-size: 1.2rem; font-weight: 900; color: #666; }
+        .stage-icon { font-size: 1.8rem; color: #ccc; }
+
+        /* حالات الأزرار التفاعلية الذكية المعتمدة على النتيجة */
+        .btn-status-review { border-color: #007bff !important; background-color: rgba(0, 123, 255, 0.02); }
+        .btn-status-review .stage-status, .btn-status-review .stage-icon { color: #007bff; }
+
+        .btn-status-success { border-color: #1e7e34 !important; background-color: rgba(30, 126, 52, 0.02); }
+        .btn-status-success .stage-status, .btn-status-success .stage-icon { color: #1e7e34; }
+
+        .btn-status-fail { border-color: #dc3545 !important; background-color: rgba(220, 53, 69, 0.02); }
+        .btn-status-fail .stage-status, .btn-status-fail .stage-icon { color: #dc3545; }
+
+
+        /* زر تحميل البطاقة */
+        .btn-download { 
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--light-green) 100%);
+            color: var(--gold); 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 16px; 
+            font-weight: 700; 
+            font-size: 1.15rem; 
+            margin-top: 20px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            box-shadow: 0 10px 20px rgba(6, 48, 29, 0.25);
+        }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(6, 48, 29, 0.4); }
+        .btn-download:active { transform: translateY(0); }
+
+        .back-home { margin-top: 30px; color: var(--gold); text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 1.05rem; }
+        .back-home:hover { text-shadow: 0 0 10px rgba(253,185,49,0.5); }
+
+        /* --- الكارت الرسمي للمتسابق (المخفي عند التحميل) --- */
+        #hiddenCard { position: absolute; left: -9999px; width: 600px; height: 320px; background-color: white; border: 2px solid var(--gold); overflow: hidden; }
+        .c-header { background-color: var(--dark-green); color: var(--gold); padding: 15px; text-align: center; font-weight: 900; font-size: 24px; border-bottom: 5px solid var(--gold); font-family: 'Cairo', sans-serif; }
+        .c-middle { display: flex; padding: 25px; align-items: center; justify-content: space-between; }
+        .c-data { text-align: right; color: black; font-size: 20px; font-weight: 900; line-height: 1.8; width: 65%; font-family: 'Cairo', sans-serif; }
+        .c-qrcode { width: 150px; height: 150px; border: 3px solid var(--dark-green); padding: 5px; }
+        .c-footer { background: var(--gold); color: black; padding: 10px; text-align: center; font-weight: 900; font-size: 16px; position: absolute; bottom: 0; width: 100%; font-family: 'Cairo', sans-serif; }
     </style>
 </head>
 <body>
-    <div class="search-area">
-        <h2 style="color:#fdb931">استعلام عن نتيجة</h2>
-        <input type="text" id="cIn" placeholder="أدخل الكود M-xxxx" style="padding:10px; width:70%; border-radius:5px;">
-        <button onclick="search()" style="padding:10px; background:#fdb931; border:none; cursor:pointer; font-weight:bold;">بحث</button>
 
-        <div id="res" class="res-info">
-            <h3 id="n"></h3>
-            <p>المستوى: <b id="l"></b></p>
-            <p>المرحلة الأولى: <b id="s1" style="color:green;"></b></p>
-            <p>المرحلة الثانية: <b id="s2" style="color:blue;"></b></p>
-            <button onclick="draw()" style="width:100%; padding:15px; background:#06301d; color:#fdb931; border:none; cursor:pointer; font-weight:bold;">تحميل الكارت ⬇️</button>
-        </div>
+    <div class="bg-layer">
+        <div class="bg-pattern"></div>
     </div>
 
-    <div id="finalCard">
-        <div style="background:#06301d; color:#fdb931; padding:15px; font-weight:bold; font-size:1.2rem;">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
-        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-            <div id="ct" style="text-align:right; line-height:2;"></div>
-            <div id="cq"></div>
+    <div class="search-box">
+        <div class="title"><i class="fas fa-id-card-alt"></i> بوّابة المتسابق الرقمية</div>
+        <div class="input-row">
+            <button class="btn-search" onclick="doSearch()">دخول</button>
+            <input type="text" id="codeInp" placeholder="أدخل كود المتسابق الرقمي">
         </div>
-        <div style="background:#fdb931; color:#06301d; padding:5px; font-weight:bold;">يرجى إبراز الكارت عند الدخول</div>
+        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 12px; font-weight: 600;">مثال على الكود: 11001</div>
+    </div>
+
+    <div id="resultDisplay">
+        <div class="st-name" id="resName"></div>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">المستوى الحالي</div>
+                <div class="info-value level-color" id="resLevel"></div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">كود المتسابق</div>
+                <div class="info-value code-color" id="resCode"></div>
+            </div>
+        </div>
+
+        <button class="stage-btn" id="btnStage1">
+            <div class="stage-info">
+                <div class="stage-title">نتيجة المرحلة الأولى</div>
+                <div class="stage-status" id="resS1"></div>
+            </div>
+            <div class="stage-icon" id="iconStage1"><i class="fas fa-hourglass-half"></i></div>
+        </button>
+
+        <button class="stage-btn" id="btnStage2">
+            <div class="stage-info">
+                <div class="stage-title">نتيجة المرحلة الثانية</div>
+                <div class="stage-status" id="resS2"></div>
+            </div>
+            <div class="stage-icon" id="iconStage2"><i class="fas fa-lock"></i></div>
+        </button>
+
+        <button class="btn-download" onclick="downloadImage()">
+            <i class="fas fa-cloud-download-alt"></i> تحميل بطاقة المتسابق الرسمية (PNG)
+        </button>
+    </div>
+
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-right"></i> العودة للشاشة الرئيسية</a>
+
+    <div id="hiddenCard">
+        <div class="c-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
+        <div class="c-middle">
+            <div id="qrPlace" class="c-qrcode"></div>
+            <div class="c-data">
+                <div>الاسم: <span id="cName"></span></div>
+                <div>المستوى: <span id="cLevel"></span></div>
+                <div style="color:#b8860b">الكود الرقمي: <span id="cCode"></span></div>
+            </div>
+        </div>
+        <div class="c-footer">يرجى إظهار هذه البطاقة للمشرف عند دخول الاختبارات</div>
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec';
-        let st = {};
-        function search() {
-            fetch(`${scriptURL}?action=checkStatus&code=${document.getElementById('cIn').value}`).then(r=>r.json()).then(d=>{
-                if(d.status === "found") {
-                    st = d; st.code = document.getElementById('cIn').value;
-                    document.getElementById('res').style.display = "block";
-                    document.getElementById('n').innerText = d.name;
-                    document.getElementById('l').innerText = d.level;
-                    document.getElementById('s1').innerText = d.score1;
-                    document.getElementById('s2').innerText = d.score2 || "قيد الانتظار";
-                } else { alert("الكود غير صحيح"); }
+        function doSearch() {
+            const code = document.getElementById('codeInp').value.trim();
+            const scriptURL = "https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec"; 
+
+            if(!code) return alert("من فضلك أدخل كود المتسابق أولاً!");
+
+            document.querySelector('.btn-search').innerText = "...";
+
+            fetch(`${scriptURL}?action=checkStatus&code=${code}`)
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector('.btn-search').innerText = "دخول";
+                if(data.status === "found") {
+                    document.getElementById('resName').innerText = data.name;
+                    document.getElementById('resLevel').innerText = data.level;
+                    document.getElementById('resCode').innerText = code;
+                    
+                    const s1 = data.score1 || "قيد المراجعة";
+                    const s2 = data.score2 || "لم تبدأ بعد";
+                    
+                    document.getElementById('resS1').innerText = s1;
+                    document.getElementById('resS2').innerText = s2;
+
+                    // --- إدارة ألوان وتفاعل زر المرحلة الأولى تلقائياً ---
+                    const b1 = document.getElementById('btnStage1');
+                    const i1 = document.getElementById('iconStage1');
+                    b1.className = "stage-btn"; // تصفية الكلاسات السابقة
+                    
+                    if(s1.includes("مبارك") || s1.includes("مؤهل")) {
+                        b1.classList.add("btn-status-success");
+                        i1.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    } else if(s1.includes("للأسف") || s1.includes("غير مؤهل")) {
+                        b1.classList.add("btn-status-fail");
+                        i1.innerHTML = '<i class="fas fa-times-circle"></i>';
+                    } else {
+                        b1.classList.add("btn-status-review");
+                        i1.innerHTML = '<i class="fas fa-hourglass-half"></i>';
+                    }
+
+                    // --- إدارة ألوان وتفاعل زر المرحلة الثانية تلقائياً ---
+                    const b2 = document.getElementById('btnStage2');
+                    const i2 = document.getElementById('iconStage2');
+                    b2.className = "stage-btn"; // تصفية الكلاسات السابقة
+                    
+                    if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق"))) {
+                        b2.classList.add("btn-status-success");
+                        i2.innerHTML = '<i class="fas fa-trophy"></i>';
+                    } else if(s2.includes("مغلق") || s2.includes("للأسف")) {
+                        b2.classList.add("btn-status-fail");
+                        i2.innerHTML = '<i class="fas fa-lock"></i>';
+                    } else {
+                        b2.classList.add("btn-status-review");
+                        i2.innerHTML = '<i class="fas fa-clock"></i>';
+                    }
+
+                    // ملء بيانات كارت التحميل والـ QR Code
+                    document.getElementById('cName').innerText = data.name;
+                    document.getElementById('cLevel').innerText = data.level;
+                    document.getElementById('cCode').innerText = code;
+                    $('#qrPlace').empty().qrcode({ text: code, foreground: "#06301d", width: 150, height: 150 });
+
+                    // إظهار لوحة التحكم بحركة انسيابية ممتازة
+                    document.getElementById('resultDisplay').style.display = "block";
+                    setTimeout(() => {
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }, 100);
+                    
+                } else {
+                    alert("عفواً.. هذا الكود الرقمي غير مسجل بقاعدة البيانات!");
+                }
+            })
+            .catch(err => {
+                alert("خطأ في الاتصال بالخادم الرئيسي للمسابقة!");
+                document.querySelector('.btn-search').innerText = "دخول";
             });
         }
-        function draw() {
-            document.getElementById('ct').innerHTML = `الاسم: ${st.name}<br>الميلاد: ${st.birth}<br>المستوى: ${st.level}<br>الكود: ${st.code}`;
-            document.getElementById('cq').innerHTML = "";
-            new QRCode(document.getElementById("cq"), { text: st.code, width: 90, height: 90 });
-            setTimeout(() => {
-                html2canvas(document.getElementById('finalCard')).then(canvas => {
-                    let a = document.createElement('a'); a.download=`كارت.png`; a.href=canvas.toDataURL(); a.click();
-                });
-            }, 800);
+
+        function downloadImage() {
+            const card = document.getElementById('hiddenCard');
+            const student = document.getElementById('resName').innerText;
+
+            html2canvas(card, { scale: 3 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `كارت_المتسابق_${student}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
         }
     </script>
 </body>
 </html>
+١
