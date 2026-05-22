@@ -88,7 +88,48 @@
             box-shadow: 0 5px 15px rgba(253, 185, 49, 0.3);
         }
         .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; }
+        .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; color: #fff !important; }
+
+        /* --- زر جروب الواتساب المخصص لصفحة النجاح --- */
+        .btn-whatsapp-group {
+            width: 100%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: #fff;
+            padding: 16px;
+            border: none;
+            border-radius: 15px;
+            font-weight: 900;
+            font-size: 1.25rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+            animation: pulseGroup 2s infinite;
+        }
+        .btn-whatsapp-group:hover { transform: translateY(-2px); filter: brightness(1.1); color: #fff; }
+        .btn-whatsapp-group i { font-size: 1.5rem; }
+
+        @keyframes pulseGroup {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        /* --- صندوق الرسائل المقفولة --- */
+        .lock-notice-box {
+            text-align: center;
+            padding: 20px 10px;
+        }
+        .lock-notice-box i {
+            font-size: 3.5rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
 
         /* --- صندوق النجاح --- */
         #successBox {
@@ -128,6 +169,12 @@
     <div class="form-card">
         <h2><i class="fas fa-user-edit"></i> تسجيل المتسابقين</h2>
         
+        <div id="lockNotice" class="lock-notice-box" style="display: none;">
+            <i id="lockIcon" class="fas fa-clock"></i>
+            <p id="lockText" style="font-weight: 700; font-size: 1.15rem; line-height: 1.8;"></p>
+            <center><a href="index.html" class="back-home"><i class="fas fa-home"></i> العودة للرئيسية</a></center>
+        </div>
+
         <form id="registrationForm">
             <div class="form-group">
                 <label><i class="fas fa-id-card"></i> الاسم الرباعي:</label>
@@ -173,6 +220,11 @@
             <p>كود المتسابق الخاص بك هو:</p>
             <div id="finalCode" class="code-display"></div>
             <p style="font-size: 0.9rem; color: #ddd;">⚠️ برجاء تصوير الشاشة (Screenshot) وحفظ الكود لإظهاره للمشرف يوم الاختبار.</p>
+            
+            <a href="https://chat.whatsapp.com/CHdiA8e4BzEJynYqje3BUy" target="_blank" class="btn-whatsapp-group">
+                <i class="fab fa-whatsapp"></i> الانضمام إلى جروب الواتساب
+            </a>
+
             <button class="btn-submit" onclick="location.reload()">تسجيل متسابق جديد</button>
         </div>
     </div>
@@ -184,6 +236,43 @@
         const form = document.getElementById('registrationForm');
         const successBox = document.getElementById('successBox');
 
+        // =========================================================
+        // ⚙️ لوحة التحكم في مواعيد وفترات التسجيل (عدل التواريخ هنا براحتك)
+        // =========================================================
+        const registrationStartDate = new Date("2026-06-25T00:00:00"); // تاريخ فتح باب التسجيل
+        const registrationEndDate   = new Date("2026-06-27T23:59:59"); // تاريخ غلق باب التسجيل
+
+        // دالة الفحص التلقائي وحجب الفورم تماماً خارج الفترة
+        function checkRegistrationPeriod() {
+            const now = new Date();
+            const lockNotice = document.getElementById('lockNotice');
+            const lockText = document.getElementById('lockText');
+            const lockIcon = document.getElementById('lockIcon');
+
+            if (now < registrationStartDate) {
+                form.style.display = 'none';
+                lockNotice.style.display = 'block';
+                lockIcon.className = "fas fa-clock";
+                lockText.innerText = `⏳ تنبيه: لم يتم فتح باب التسجيل بعد.\n سيبدأ التسجيل إن شاء الله يوم ${registrationStartDate.toLocaleDateString('ar-EG')} الساعة ${registrationStartDate.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}`;
+                lockText.style.color = "var(--gold)";
+                return false;
+            } 
+            else if (now > registrationEndDate) {
+                form.style.display = 'none';
+                lockNotice.style.display = 'block';
+                lockIcon.className = "fas fa-calendar-times";
+                lockText.innerText = "❌ معذرةً، تم غلق باب التسجيل في المسابقة بالوقت الحالي لانتهاء المدة المحددة رسمياً!";
+                lockText.style.color = "#ff4d4d";
+                return false;
+            }
+            return true;
+        }
+
+        checkRegistrationPeriod();
+
+        // =========================================================
+        // منطق حساب السن والمستويات (القديم بالملّي بدون أي تغيير)
+        // =========================================================
         const levels = [
             { id: "المستوى الخامس", text: "المستوى الخامس (5 أجزاء) - حتى 10 سنوات", max: 10 },
             { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
@@ -222,10 +311,13 @@
         });
 
         // رابط الـ Web App الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwSY6XsPgm_1OtJCy9ygriJ57yfKRE-OcKyBqCHJ-2PfiVMFvlOAlXHxC9y5Y-a5jTi/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec';
 
         form.addEventListener('submit', e => {
             e.preventDefault();
+
+            if (!checkRegistrationPeriod()) return;
+
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('statusMsg').innerText = "⏳ برجاء الانتظار جاري التسجيل...";
             document.getElementById('statusMsg').style.color = "var(--gold)";
