@@ -32,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        /* --- أنيميشن الخلفية الحية --- */
+        /* --- أنيميشن Background الحية --- */
         .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -137,8 +137,22 @@
         .timer-unit span { font-size: 1.6rem; font-weight: 900; color: var(--gold); display: block; }
         .timer-label { font-size: 0.75rem; color: #bbb; margin-top: 5px; }
 
+        /* رسالة غلق التسجيل البديلة للزر */
+        .closed-registration-notice {
+            grid-column: span 2;
+            background: rgba(255, 77, 77, 0.15);
+            border: 1px dashed #ff4d4d;
+            color: #ff4d4d;
+            padding: 18px;
+            border-radius: 22px;
+            font-weight: 900;
+            font-size: 1.15rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
         /* --- شبكة الأزرار --- */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
 
         .btn {
             background: var(--glass);
@@ -173,7 +187,50 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        .footer { margin-bottom: 30px; color: var(--gold); font-weight: 600; opacity: 0.7; }
+        .footer { margin-bottom: 20px; color: var(--gold); font-weight: 600; opacity: 0.7; }
+
+        /* ========================================================= */
+        /* 🌟 ستايل أيقونات التواصل الدائرية العائمة أسفل الموقع 🌟 */
+        /* ========================================================= */
+        .bottom-social-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .social-circle-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* تلوين خلفية كل أيقونة بهويتها الرسمية بشكل شيك ومتناسق */
+        .social-circle-btn.facebook-btn { background-color: #1877f2; }
+        .social-circle-btn.whatsapp-btn { background-color: #25d366; }
+        .social-circle-btn.phone-btn { background-color: #00a8ff; }
+
+        /* تأثير الحركة والـ Hover عند الضغط */
+        .social-circle-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .social-circle-btn:active {
+            transform: scale(0.9);
+        }
     </style>
 </head>
 <body>
@@ -196,7 +253,7 @@
         <p class="quran-verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ"</p>
 
         <div id="counterArea" class="timer-card">
-            <div style="color: var(--gold); margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">متبقي على انطلاق المسابقة</div>
+            <div id="counterTitle" style="color: var(--gold); margin-bottom: 15px; font-weight: 600; font-size: 0.95rem;">جاري فحص حالة المسابقة...</div>
             <div class="timer-flex">
                 <div class="timer-unit"><span id="days">00</span><div class="timer-label">يوم</div></div>
                 <div class="timer-unit"><span id="hours">00</span><div class="timer-label">ساعة</div></div>
@@ -206,7 +263,10 @@
         </div>
 
         <div class="menu-grid">
-            <a href="register.html" class="btn reg-btn"><i class="fas fa-edit"></i> سجل الآن بالمسابقة</a>
+            <div id="registrationButtonContainer" style="display: contents;">
+                <a href="register.html" id="mainRegBtn" class="btn reg-btn"><i class="fas fa-edit"></i> سجل الآن بالمسابقة</a>
+            </div>
+
             <a href="rules.html" class="btn"><i class="fas fa-scroll"></i> الشروط</a>
             <a href="levels.html" class="btn"><i class="fas fa-trophy"></i> المستويات</a>
             <a href="status.html" class="btn"><i class="fas fa-user-circle"></i> معلومات الطالب</a>
@@ -214,19 +274,61 @@
         </div>
 
         <div class="footer">نحو جيل متقن لكتاب الله تعالى</div>
+
+        <div class="bottom-social-container">
+            <a href="https://www.facebook.com/profile.php?id=61572093324913" class="social-circle-btn facebook-btn" target="_blank" title="صفحتنا على فيسبوك">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+
+            <a href="https://wa.me/201141334629" class="social-circle-btn whatsapp-btn" target="_blank" title="تواصل معنا عبر واتساب">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+
+            <a href="tel:+20 12 00861020" class="social-circle-btn phone-btn" title="اتصال هاتفي مباشر">
+                <i class="fas fa-phone-alt"></i>
+            </a>
+        </div>
     </div>
 
     <script>
-        const target = new Date("2026-07-01T00:00:00").getTime();
-        setInterval(() => {
+        // =====================================================================
+        // ⚙️ المواعيد الخاصة بالعداد الذكي لتتطابق تماماً مع السيستم
+        // =====================================================================
+        const regStart = new Date("2026-05-22T00:00:00").getTime(); // فتح التسجيل
+        const regEnd   = new Date("2026-05-22T23:59:59").getTime(); // غلق التسجيل
+
+        function updateSmartTimer() {
             const now = new Date().getTime();
+            const counterArea = document.getElementById("counterArea");
+            const counterTitle = document.getElementById("counterTitle");
+            const btnContainer = document.getElementById("registrationButtonContainer");
+            
+            let target;
+
+            if (now < regStart) {
+                target = regStart;
+                counterTitle.innerHTML = "⏳ متبقي على فتح باب التسجيل الإلكتروني";
+            } 
+            else if (now >= regStart && now <= regEnd) {
+                target = regEnd;
+                counterTitle.innerHTML = "⚡ سارع بالتسجيل! متبقي على غلق باب المسابقة";
+            } 
+            else {
+                counterArea.style.display = "none";
+                btnContainer.innerHTML = `<div class="closed-registration-notice"><i class="fas fa-calendar-times"></i> معذرةً، تم غلق باب التسجيل لانتهاء المدة المحددة!<br><span style="font-size:0.9rem; font-weight:normal; color:#ddd;">انتظروا انطلاق الاختبارات يوم 1-7 إن شاء الله</span></div>`;
+                return;
+            }
+
             const diff = target - now;
-            if (diff < 0) return document.getElementById("counterArea").style.display = "none";
-            document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("minutes").innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById("seconds").innerText = Math.floor((diff % (1000 * 60)) / 1000);
-        }, 1000);
+            
+            document.getElementById("days").innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById("hours").innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+        }
+
+        updateSmartTimer();
+        setInterval(updateSmartTimer, 1000);
     </script>
 </body>
 </html>
