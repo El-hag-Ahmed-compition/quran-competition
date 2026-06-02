@@ -239,8 +239,8 @@
         // =========================================================
         // ⚙️ لوحة التحكم في مواعيد وفترات التسجيل (عدل التواريخ هنا براحتك)
         // =========================================================
-        const registrationStartDate = new Date("2026-06-25T00:00:00"); // تاريخ فتح باب التسجيل
-        const registrationEndDate   = new Date("2026-06-27T23:59:59"); // تاريخ غلق باب التسجيل
+        const registrationStartDate = new Date("2026-05-25T00:00:00"); // تاريخ فتح باب التسجيل
+        const registrationEndDate   = new Date("2026-05-27T23:59:59"); // تاريخ غلق باب التسجيل
 
         // دالة الفحص التلقائي وحجب الفورم تماماً خارج الفترة
         function checkRegistrationPeriod() {
@@ -271,14 +271,14 @@
         checkRegistrationPeriod();
 
         // =========================================================
-        // منطق حساب السن والمستويات (القديم بالملّي بدون أي تغيير)
+        // منطق حساب السن وتحديث المستويات بناءً على التحديث النهائي الصارم منك
         // =========================================================
         const levels = [
-            { id: "المستوى الخامس", text: "المستوى الخامس (3 أجزاء) - حتى 10 سنوات", max: 10 },
-            { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
-            { id: "المستوى الثالث", text: "المستوى الثالث (ثلث القرآن) - حتى 13 سنة", max: 13 },
-            { id: "المستوى الثاني", text: "المستوى الثاني (نصف القرآن) - حتى 15 سنة", max: 15 },
-            { id: "المستوى الأول", text: "المستوى الأول (القرآن كاملاً) - حتى 20 سنة", max: 20 }
+            { id: "المستوى 5", text: "المستوى الخامس (3 أجزاء) - حتى 10 سنوات", max: 10 },
+            { id: "المستوى 4", text: "المستوى الرابع (ربع القرآن) - حتى 14 سنة", max: 14 },
+            { id: "المستوى 3", text: "المستوى الثالث (ثلث القرآن) - حتى 16 سنة", max: 16 },
+            { id: "المستوى 2", text: "المستوى الثاني (نصف القرآن) - حتى 18 سنة", max: 18 },
+            { id: "المستوى 1", text: "المستوى الأول (القرآن كاملاً) - حتى 20 سنة", max: 20 }
         ];
 
         birthDateInput.addEventListener('change', function() {
@@ -311,7 +311,7 @@
         });
 
         // رابط الـ Web App الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzWbwybDbzSklTaqjHefv0cgZjsFT8uyjV-9zKMFweLTU9iKLR2JKbOXZgoYKI6KyyI/exec';
 
         form.addEventListener('submit', e => {
             e.preventDefault();
