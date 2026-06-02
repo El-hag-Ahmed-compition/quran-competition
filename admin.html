@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang=\"ar\" dir=\"rtl\">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>لوحة تحكم الإدارة | مسجد الملهود</title>
-    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         
@@ -13,6 +13,7 @@
             --dark-green: #06301d;
             --light-green: #0a4d2e;
             --glass: rgba(255, 255, 255, 0.08);
+            --danger: #e74c3c;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -45,6 +46,7 @@
         }
 
         h2 { color: var(--gold); font-weight: 900; font-size: 1.6rem; margin-top: 0; margin-bottom: 20px; }
+        h3 { color: #fff; font-weight: 700; font-size: 1.15rem; margin-top: 0; margin-bottom: 15px; text-align: right; border-right: 3px solid var(--gold); padding-right: 8px; }
         
         .input-group { margin-bottom: 20px; text-align: right; }
         label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #dfdfdf; }
@@ -79,7 +81,47 @@
         }
         .btn-action:disabled { background: #777; color: #ccc; cursor: not-allowed; box-shadow: none; }
 
-        /* منطقة عرض بيانات الطالب */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 12px 5px;
+            text-align: center;
+        }
+        .stat-card i { font-size: 1.2rem; margin-bottom: 5px; display: block; }
+        .stat-card .stat-value { font-size: 1.4rem; font-weight: 900; }
+        .stat-card .stat-label { font-size: 0.75rem; color: #cdcdcd; font-weight: 600; }
+        
+        .stat-total i { color: var(--gold); }
+        .stat-total .stat-value { color: var(--gold); }
+        .stat-qualified i { color: #2ecc71; }
+        .stat-qualified .stat-value { color: #2ecc71; }
+        .stat-not-qualified i { color: var(--danger); }
+        .stat-not-qualified .stat-value { color: var(--danger); }
+
+        .global-control-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(253, 185, 49, 0.4);
+            border-radius: 18px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn-publish { background: #2ecc71; color: white; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2); }
+        .btn-hide-results { background: #e67e22; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.2); }
+
         .student-card {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(253, 185, 49, 0.2);
@@ -92,7 +134,6 @@
         .info-row { margin-bottom: 10px; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
         .info-row span { color: var(--gold); font-weight: 700; }
 
-        /* الأزرار الملونة للمراحل */
         .select-wrapper { margin-top: 15px; }
         .select-style {
             width: 100%;
@@ -109,8 +150,19 @@
         }
 
         .btn-save { background: #2ecc71; color: white; margin-top: 10px; }
-        .btn-reset { background: #e74c3c; color: white; margin-top: 10px; }
-        .btn-archive { background: #7f8c8d; color: white; margin-top: 30px; }
+        .btn-move { background: #3498db; color: white; margin-top: 5px; }
+        .btn-reset { background: var(--danger); color: white; margin-top: 15px; }
+        
+        /* منطقة الخطر - التصفير الشامل */
+        .danger-zone {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 18px;
+            padding: 15px;
+            margin-top: 35px;
+            text-align: right;
+        }
+        .btn-danger-clear { background: var(--danger); color: white; margin-top: 10px; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2); }
 
         .status-message { margin-top: 15px; font-weight: 700; font-size: 1.05rem; }
     </style>
@@ -130,7 +182,38 @@
         <div id="controlArea" style="display: none;">
             <h2><i class="fas fa-user-shield"></i> لوحة التحكم والتحكيم</h2>
             
+            <div class="stats-grid">
+                <div class="stat-card stat-total">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-value" id="statTotal">--</div>
+                    <div class="stat-label">إجمالي المسجلين</div>
+                </div>
+                <div class="stat-card stat-qualified">
+                    <i class="fas fa-user-check"></i>
+                    <div class="stat-value" id="statQualified">--</div>
+                    <div class="stat-label">المؤهلين م1</div>
+                </div>
+                <div class="stat-card stat-not-qualified">
+                    <i class="fas fa-user-times"></i>
+                    <div class="stat-value" id="statNotQualified">--</div>
+                    <div class="stat-label">غير المؤهلين</div>
+                </div>
+            </div>
+            
+            <div class="global-control-box">
+                <h3><i class="fas fa-bullhorn"></i> التحكم الجماعي بالنتائج</h3>
+                <div class="grid-buttons">
+                    <button class="btn-action btn-publish" id="btnPublishAll" onclick="toggleGlobalResults('معلنة')">
+                        <i class="fas fa-eye"></i> إعلان النتيجة 
+                    </button>
+                    <button class="btn-action btn-hide-results" id="btnHideAll" onclick="toggleGlobalResults('مخفية')">
+                        <i class="fas fa-eye-slash"></i> إخفاء النتيجة
+                    </button>
+                </div>
+            </div>
+
             <div id="searchBox">
+                <h3><i class="fas fa-search"></i> رصد وتعديل طالب محدد</h3>
                 <div class="input-group">
                     <label>ابحث بكود الطالب الرقمي:</label>
                     <input type="number" id="studentCode" class="input-style" placeholder="مثال: 11005">
@@ -140,7 +223,7 @@
 
             <div class="student-card" id="studentCard">
                 <div class="info-row">الاسم: <span id="resName"></span></div>
-                <div class="info-row">المستوى: <span id="resLevel"></span></div>
+                <div class="info-row">المستوى الحالي: <span id="resLevel"></span></div>
                 <div class="info-row">الهاتف: <span id="resPhone"></span></div>
                 
                 <hr style="border: 0; border-top: 1px dashed rgba(253,185,49,0.3); margin: 15px 0;">
@@ -162,38 +245,65 @@
                         <option value="لم يوفق">لم يوفق</option>
                     </select>
                 </div>
+                <button class="btn-action btn-save" id="btnSave" onclick="saveStatus()">💾 حفظ التعديلات ورصد النتيجة</button>
 
-                <button class="btn-action btn-save" id="btnSave" onclick="saveStatus()">💾 حفظ التعديلات الجديدة</button>
-                <button class="btn-action btn-reset" onclick="resetForm()"><i class="fas fa-redo"></i> بحث عن طالب آخر</button>
+                <hr style="border: 0; border-top: 1px dashed rgba(253,185,49,0.3); margin: 20px 0;">
+
+                <div class="select-wrapper" style="margin-top: 5px;">
+                    <label style="color: #3498db;"><i class="fas fa-exchange-alt"></i> نقل الطالب لمستوى آخر:</label>
+                    <select id="moveLevelSelect" class="select-style" style="border-color: #3498db;">
+                        <option value="المستوى 1">المستوى الأول (القرآن كاملاً)</option>
+                        <option value="المستوى 2">المستوى الثاني (نصف القرآن)</option>
+                        <option value="المستوى 3">المستوى الثالث (ربع القرآن)</option>
+                        <option value="المستوى 4">المستوى الرابع (خمسة أجزاء)</option>
+                        <option value="المستوى 5">المستوى الخامس (ثلاثة أجزاء)</option>
+                    </select>
+                </div>
+                <button class="btn-action btn-move" id="btnMove" onclick="moveStudentLevel()">🔄 نقل وتحديث الشيت فوراً</button>
+
+                <button class="btn-action btn-reset" onclick="resetForm()"><i class="fas fa-redo"></i> إغلاق وبحث عن طالب آخر</button>
             </div>
 
             <div id="statusMsg" class="status-message"></div>
 
-            <button class="btn-action btn-archive" id="btnArchive" onclick="triggerArchive()">
-                <i class="fas fa-folder-open"></i> 📁 تفعيل أرشفة الطلاب غير المؤهلين
-            </button>
+            <div class="danger-zone">
+                <h3 style="color: var(--danger); border-right-color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> منطقة الخطر (إدارة البيانات)</h3>
+                <div style="font-size: 0.8rem; color: #eee; line-height: 1.4;">اضغط هنا فقط إذا كنت تريد مسح كل أسماء الطلاب المسجلين بالكامل من جميع المستويات لتجربة المسابقة أو لبدء مسابقة جديدة تماماً.</div>
+                <button class="btn-action btn-danger-clear" id="btnDangerClear" onclick="resetCompetitionData()">
+                    <i class="fas fa-trash-alt"></i> تصفير وحذف بيانات المسابقة
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // رابط الـ Web App الحقيقي بتاعك والمربوط بالـ Apps Script المطور بالملّي
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec';
-        
-        // باسوورد لوحة الإدارة (تقدر تغيره لـ أي كلمة سر تحبها هنا)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzWbwybDbzSklTaqjHefv0cgZjsFT8uyjV-9zKMFweLTU9iKLR2JKbOXZgoYKI6KyyI/exec';
         const MASTER_PASSWORD = '12_FA@09sh'; 
+        let globalCurrentLevel = ""; // لحفظ مستوى الطالب المبحوث عنه مؤقتاً
 
-        // 1. دالة فحص الباسوورد
         function checkPassword() {
             const passInput = document.getElementById('adminPass').value.trim();
             if (passInput === MASTER_PASSWORD) {
                 document.getElementById('lockArea').style.display = 'none';
                 document.getElementById('controlArea').style.display = 'block';
+                fetchStats();
             } else {
                 alert('عفواً.. كلمة المرور غير صحيحة! حاول مجدداً.');
             }
         }
 
-        // 2. دالة البحث عن الطالب بكوده
+        function fetchStats() {
+            fetch(`${scriptURL}?action=getStats`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.total !== undefined) {
+                    document.getElementById('statTotal').innerText = data.total;
+                    document.getElementById('statQualified').innerText = data.qualified;
+                    document.getElementById('statNotQualified').innerText = data.notQualified;
+                }
+            }).catch(err => console.error('خطأ الإحصائيات:', err));
+        }
+
         function searchStudent() {
             const code = document.getElementById('studentCode').value.trim();
             if (!code) return alert('برجاء كتابة كود الطالب أولاً!');
@@ -201,9 +311,7 @@
             const btnSearch = document.getElementById('btnSearch');
             btnSearch.disabled = true;
             btnSearch.innerText = '🔍 جاري جلب البيانات...';
-            document.getElementById('statusMsg').innerText = '';
 
-            // طلب البيانات مع تمرير ميزة isAdmin لقراءة البيانات الصافية من الشيت
             fetch(`${scriptURL}?action=checkStatus&code=${code}&isAdmin=true`)
             .then(res => res.json())
             .then(data => {
@@ -211,30 +319,27 @@
                 btnSearch.innerText = 'بحث عن المتسابق';
 
                 if (data.status === 'found') {
-                    // ملء بطاقة البيانات
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
                     document.getElementById('resPhone').innerText = data.phone;
                     
-                    // اختيار القيم الحالية في القوائم المنسدلة تلقائياً
-                    document.getElementById('stage1Select').value = data.score1;
-                    document.getElementById('stage2Select').value = data.score2;
+                    globalCurrentLevel = data.level; // حفظ المستوى الحالي للطالب
+                    
+                    document.getElementById('stage1Select').value = data.score1 || "قيد المراجعة";
+                    document.getElementById('stage2Select').value = data.score2 || "لم تبدأ بعد";
 
-                    // إخفاء صندوق البحث وإظهار بطاقة التعديل
                     document.getElementById('searchBox').style.display = 'none';
                     document.getElementById('studentCard').style.display = 'block';
                 } else {
                     alert('عفواً.. هذا الكود الرقمي غير مسجل بقاعدة البيانات حالياً!');
                 }
-            })
-            .catch(err => {
-                alert('حدث خطأ في الاتصال بالسيرفر! تأكد من الإنترنت.');
+            }).catch(err => {
+                alert('حدث خطأ في الاتصال! تأكد من الإنترنت.');
                 btnSearch.disabled = false;
                 btnSearch.innerText = 'بحث عن المتسابق';
             });
         }
 
-        // 3. دالة حفظ البيانات المعدلة في الشيت (doPost)
         function saveStatus() {
             const code = document.getElementById('studentCode').value.trim();
             const s1 = document.getElementById('stage1Select').value;
@@ -242,9 +347,8 @@
             const btnSave = document.getElementById('btnSave');
 
             btnSave.disabled = true;
-            btnSave.innerText = '⏳ جاري ترحيل التعديلات للشيت...';
+            btnSave.innerText = '⏳ جاري الحفظ...';
 
-            // تجهيز البيانات لإرسالها عبر الـ POST
             const formData = new FormData();
             formData.append('action', 'updateStatus');
             formData.append('code', code);
@@ -255,45 +359,100 @@
             .then(res => res.json())
             .then(data => {
                 btnSave.disabled = false;
-                btnSave.innerText = '💾 حفظ التعديلات الجديدة';
-                
+                btnSave.innerText = '💾 حفظ التعديلات ورصد النتيجة';
                 if (data.result === 'success') {
-                    document.getElementById('statusMsg').innerText = '✅ ' + data.message;
-                    document.getElementById('statusMsg').style.color = '#2ecc71';
                     alert(data.message);
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(err => {
-                alert('حدث خطأ أثناء حفظ البيانات، حاول مرة أخرى!');
-                btnSave.disabled = false;
-                btnSave.innerText = '💾 حفظ التعديلات الجديدة';
-            });
+                    fetchStats(); 
+                } else { alert(data.message); }
+            }).catch(err => { alert('حدث خطأ، حاول مرة أخرى!'); btnSave.disabled = false; });
         }
 
-        // 4. تصفير البطاقة والرجوع للبحث عن كود جديد
+        // --- [تطبيق الاقتراح 2]: دالة إرسال طلب نقل مستوى الطالب بالسيرفر ---
+        function moveStudentLevel() {
+            const code = document.getElementById('studentCode').value.trim();
+            const targetLvl = document.getElementById('moveLevelSelect').value;
+            const btnMove = document.getElementById('btnMove');
+
+            if(!confirm(`هل أنت متأكد من نقل المتسابق من [ ${globalCurrentLevel} ] إلى [ ${targetLvl} ]؟`)) return;
+
+            btnMove.disabled = true;
+            btnMove.innerText = '⏳ جاري نقل الطالب وإعادة ترتيب الشيتات...';
+
+            const formData = new FormData();
+            formData.append('action', 'moveLevel');
+            formData.append('code', code);
+            formData.append('currentLevel', globalCurrentLevel);
+            formData.append('targetLevel', targetLvl);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                btnMove.disabled = false;
+                btnMove.innerText = '🔄 نقل وتحديث الشيت فوراً';
+                if(data.result === 'success') {
+                    alert(data.message);
+                    resetForm(); // إغلاق الكارت بعد النقل الناجح
+                } else {
+                    alert(data.result === 'error' ? data.message : 'حدث خطأ أثناء النقل!');
+                }
+            }).catch(err => { alert('فشل الاتصال بالخادم!'); btnMove.disabled = false; btnMove.innerText = '🔄 نقل وتحديث الشيت فوراً'; });
+        }
+
+        // --- [تطبيق الاقتراح 3]: دالة تصفير وحذف بيانات المسابقة بالكامل ---
+        function resetCompetitionData() {
+            const check1 = confirm("⚠️ تنبيه خطير جداً:\nهل أنت متأكد تماماً من حذف وتصفير جميع شيتات المسابقة؟ هذا الإجراء سيمسح كل الأسماء والنتائج ولا يمكن التراجع عنه!");
+            if (!check1) return;
+
+            const check2 = prompt("لتأكيد الحذف الشامل، اكتب كلمة (تصفير) في الصندوق أدناه:");
+            if (check2 !== "تصفير") return alert("تم إلغاء العملية لأن الكلمة غير مطابقة.");
+
+            const btnClear = document.getElementById('btnDangerClear');
+            btnClear.disabled = true;
+            btnClear.innerText = '⏳ جاري مسح وتفريغ قاعدة البيانات بالكامل...';
+
+            const formData = new FormData();
+            formData.append('action', 'resetAllData');
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                btnClear.disabled = false;
+                btnClear.innerText = 'تصفير وحذف بيانات المسابقة';
+                if(data.result === 'success') {
+                    alert(data.message);
+                    fetchStats();
+                } else { alert('حدث خطأ أثناء عملية المسح!'); }
+            }).catch(err => { alert('فشل الاتصال بالسيرفر!'); btnClear.disabled = false; });
+        }
+
+        function toggleGlobalResults(statusValue) {
+            const confirmMsg = statusValue === 'معلنة' ? "هل أنت متأكد من إعلان النتيجة للجميع؟" : "هل أنت متأكد من إخفاء النتيجة؟";
+            if (!confirm(confirmMsg)) return;
+
+            const btnPublish = document.getElementById('btnPublishAll');
+            const btnHide = document.getElementById('btnHideAll');
+            
+            btnPublish.disabled = true;
+            btnHide.disabled = true;
+
+            const formData = new FormData();
+            formData.append('action', 'toggleResults');
+            formData.append('status', statusValue);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                btnPublish.disabled = false;
+                btnHide.disabled = false;
+                if (data.result === 'success') { alert(data.message); fetchStats(); }
+            }).catch(err => { btnPublish.disabled = false; btnHide.disabled = false; });
+        }
+
         function resetForm() {
             document.getElementById('studentCode').value = '';
-            document.getElementById('statusMsg').innerText = '';
             document.getElementById('studentCard').style.display = 'none';
             document.getElementById('searchBox').style.display = 'block';
-        }
-
-        // 5. زرار تشغيل دالة الأرشفة من الموبايل علطول
-        function triggerArchive() {
-            if (!confirm('هل أنت متأكد من تفعيل الأرشفة؟ سيتم نقل جميع الطلاب المكتوب أمامهم "غير مؤهل" في شيتات المستويات إلى شيت الأرشيف تلقائياً.')) return;
-
-            const btnArchive = document.getElementById('btnArchive');
-            btnArchive.disabled = true;
-            btnArchive.innerText = '📁 جاري فرز ونقل البيانات للأرشيف...';
-
-            // إرسال طلب تفعيل الأرشفة التلقائية المدمجة بالـ Apps Script
-            fetch(`${scriptURL}?action=getLatestRegistrations`) // حيلة لتشغيل دالة فرعية لو رغبت أو ربط مباشر، الكود القديم بالأعلى يعمل من زر الشيت، لكننا هنا يمكننا ربطه بفتح طلب الأرشفة المباشر.
-            // لتبسيط التفعيل المباشر للأرشفة من الـ Web App تم ربطها بروح الـ Apps script
-            alert('💡 لتأمين الأرشفة بنسبة 100%، يمكنك تشغيلها بضغطة زر واحدة من القائمة العلوية داخل جوجل شيت نفسه لضمان عرض رسالة التنبيه بالعدد الدقيق!');
-            btnArchive.disabled = false;
-            btnArchive.innerText = '📁 تفعيل أرشفة الطلاب غير المؤهلين';
+            fetchStats(); 
         }
     </script>
 </body>
