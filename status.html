@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;700;900&display=swap');
         
@@ -147,7 +149,7 @@
         .info-value.level-color { color: #c48c02; font-weight: 900; }
         .info-value.code-color { color: var(--dark-green); font-weight: 900; font-family: monospace; font-size: 1.3rem; }
 
-        /* --- تعديل المراحل لتصبح أزرار تفاعلية صريحة وجميلة --- */
+        /* --- المراحل التفاعلية --- */
         .stage-btn {
             width: 100%;
             background: #ffffff;
@@ -166,7 +168,6 @@
             position: relative;
         }
         
-        /* تأثيرات حركة الأزرار عند التفاعل والضغط */
         .stage-btn:hover { 
             transform: translateY(-2px); 
             box-shadow: 0 6px 15px rgba(6, 48, 29, 0.1);
@@ -178,7 +179,7 @@
 
         .stage-info { text-align: right; }
         .stage-title { font-size: 1.05rem; font-weight: 700; color: var(--dark-green); margin-bottom: 4px; }
-        .stage-status { font-size: 1.2rem; font-weight: 900; color: #666; }
+        .stage-status { font-size: 1.15rem; font-weight: 900; color: #666; }
         .stage-icon { font-size: 1.8rem; color: #ccc; }
 
         /* حالات الأزرار التفاعلية الذكية المعتمدة على النتيجة */
@@ -291,9 +292,37 @@
     </div>
 
     <script>
+        // دالة تشغيل تأثير الاحتفال بقصاصات الورق الملونة
+        function launchCelebration() {
+            // فرقعة أولى من المنتصف السفلي
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+            
+            // فرقعة من الجانب الأيسر بعد 300 مللي ثانية
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    spread: 100,
+                    origin: { x: 0.3, y: 0.5 }
+                });
+            }, 300);
+
+            // فرقعة من الجانب الأيمن بعد 600 مللي ثانية لإكمال الرؤية المبهجة
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    spread: 100,
+                    origin: { x: 0.7, y: 0.5 }
+                });
+            }, 600);
+        }
+
         function doSearch() {
             const code = document.getElementById('codeInp').value.trim();
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwSY6XsPgm_1OtJCy9ygriJ57yfKRE-OcKyBqCHJ-2PfiVMFvlOAlXHxC9y5Y-a5jTi/exec"; 
+            const scriptURL = "https://script.google.com/macros/s/AKfycbzWbwybDbzSklTaqjHefv0cgZjsFT8uyjV-9zKMFweLTU9iKLR2JKbOXZgoYKI6KyyI/exec"; 
 
             if(!code) return alert("من فضلك أدخل كود المتسابق أولاً!");
 
@@ -319,7 +348,10 @@
                     const i1 = document.getElementById('iconStage1');
                     b1.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
-                    if(s1.includes("مبارك") || s1.includes("مؤهل")) {
+                    if(s1.includes("جاري رصد")) {
+                        b1.classList.add("btn-status-review");
+                        i1.innerHTML = '<i class="fas fa-hourglass-half"></i>';
+                    } else if(s1.includes("مبارك") || s1.includes("مؤهل")) {
                         b1.classList.add("btn-status-success");
                         i1.innerHTML = '<i class="fas fa-check-circle"></i>';
                     } else if(s1.includes("للأسف") || s1.includes("غير مؤهل")) {
@@ -335,7 +367,10 @@
                     const i2 = document.getElementById('iconStage2');
                     b2.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
-                    if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق"))) {
+                    if(s1.includes("جاري رصد") || s2.includes("جاري رصد")) {
+                        b2.classList.add("btn-status-review");
+                        i2.innerHTML = '<i class="fas fa-clock"></i>';
+                    } else if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق") && !s2.includes("⏳"))) {
                         b2.classList.add("btn-status-success");
                         i2.innerHTML = '<i class="fas fa-trophy"></i>';
                     } else if(s2.includes("مغلق") || s2.includes("للأسف")) {
@@ -354,6 +389,15 @@
 
                     // إظهار لوحة التحكم بحركة انسيابية ممتازة
                     document.getElementById('resultDisplay').style.display = "block";
+                    
+                    // --- [تفعيل الميزة الجديدة]: تشغيل الاحتفال فوراً عند التأهل للمرحلة الأولى أو الثانية ---
+                    const isQualifiedS1 = (s1.includes("مبارك") || s1.includes("مؤهل")) && !s1.includes("غير");
+                    const isQualifiedS2 = (s2.includes("مبارك") || s2.includes("ناجح")) && !s2.includes("لأسف");
+
+                    if (isQualifiedS1 || isQualifiedS2) {
+                        launchCelebration();[span_2](start_span)[span_2](end_span)
+                    }
+
                     setTimeout(() => {
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     }, 100);
@@ -382,4 +426,3 @@
     </script>
 </body>
 </html>
-١
